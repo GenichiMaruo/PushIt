@@ -1,0 +1,66 @@
+/* include guard */
+#ifndef OBJECT_H
+#define OBJECT_H
+
+#include <stddef.h>
+#include <stdio.h>
+#include <stdlib.h>
+typedef struct Hitbox {
+    int size_x;
+    int size_y;
+    int size_z;
+    int old_size_x;
+    int old_size_y;
+    int old_size_z;
+} Hitbox;
+typedef struct Object {
+    double x;
+    double y;
+    double z;
+    double vx;
+    double vy;
+    double vz;
+    int draw_x;
+    int draw_y;
+    int draw_z;
+    int draw_old_x;
+    int draw_old_y;
+    int draw_old_z;
+    int old_x;
+    int old_y;
+    int old_z;
+    double old_vx;
+    double old_vy;
+    double old_vz;
+    int collision_above_flag;
+    int collision_enable;
+    Hitbox hitbox;
+    struct Object* followed_obj;
+} Object;
+
+typedef struct ObjList {
+    Object* obj;
+    struct ObjList* next;
+} ObjList;
+
+void move_referencing_obj(Object* obj, double x, double y, double z, double vx,
+                          double vy, double vz);
+
+void obj_list_add(ObjList** list, Object* obj);
+void free_obj_list(ObjList* list);
+
+void object_init(Object* obj, double x, double y, double z, double vx,
+                 double vy, double vz, int size_x, int size_y, int size_z);
+void object_set_size(Object* obj, int size_x, int size_y, int size_z);
+
+void object_update(Object* main_obj, double d_sec);
+
+void collision(Object* obj1, Object* obj2);
+
+int is_collided_x(Object obj1);
+int is_collided_y(Object obj1);
+int is_collided_z(Object obj1);
+
+int check_if_object_above(Object obj1, Object obj2);
+
+#endif /* OBJECT_H */
