@@ -2,9 +2,12 @@
 #ifndef WINDOWMNG_H
 #define WINDOWMNG_H
 
+#define ART_FOLDER_PATH "art/"
+
 #include <ncurses.h>
 #include <sys/time.h>
 
+#include "error.h"
 #include "player.h"
 
 void get_start_time();

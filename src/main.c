@@ -118,6 +118,20 @@ int main(int argc, char **argv) {
                 if (strcmp(ip_addr, "localhost") == 0) {
                     ip_addr = "127.0.0.1";
                 }
+                /* get ip address from hostname */
+                if (strcmp(ip_addr, "localhost") != 0) {
+                    struct hostent *host;
+                    struct in_addr **addr_list;
+                    int i;
+                    if ((host = gethostbyname(ip_addr)) == NULL) {
+                        error("gethostbyname\n");
+                    }
+                    addr_list = (struct in_addr **)host->h_addr_list;
+                    for (i = 0; addr_list[i] != NULL; i++) {
+                        ip_addr = inet_ntoa(*addr_list[i]);
+                    }
+                }
+                /* print ip address */
                 printf("ip_addr: %s\n", ip_addr);
                 /* Creating socket file descriptor */
                 error_check((server_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0,

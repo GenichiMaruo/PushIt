@@ -17,11 +17,13 @@ void import_from_txt() {
     char buf[256];
     int i = 0;
 
-    fp = fopen(fname, "r");
-    if (fp == NULL) {
-        printf("%s file not open!\n", fname);
-        exit(1);
-    }
+    /* add file path to fname */
+    char *path = (char *)malloc(sizeof(char) * 256);
+    strcpy(path, ART_FOLDER_PATH);
+    strcat(path, fname);
+    fname = path;
+
+    error_check((fp = fopen(fname, "r")) == NULL, "fopen");
     while (fgets(buf, 256, fp) != NULL) {
         aa[i] = (char *)malloc(sizeof(char) * 256);
         strcpy(aa[i], buf);
