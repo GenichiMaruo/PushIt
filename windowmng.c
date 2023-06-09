@@ -1,13 +1,12 @@
 #include "windowmng.h"
 
 struct timespec start_time, end_time, end_time2;
-extern int field_x, field_y, field_z;
+extern int field_x, field_z;
 extern int screen_width, screen_height;
 extern int max_offscreen_width, max_offscreen_height;
 extern short int aa_flg, debug_flg;
 extern Player *main_pl;
 extern PlayerList *pl_list;
-extern int y_angle;
 extern int max_fps, frame, timeout_cnt;
 
 char *aa[121] = {0};
@@ -101,10 +100,9 @@ int get_field_screen_x(Player pl, int screen_width, int field_width,
 /* get field screen position z */
 int get_field_screen_z(Player pl, int screen_height, int field_height,
                        int max_offscreen_height) {
-    int y = get_player_y(pl) / y_angle;
     return get_main_player_screen_z(pl, screen_height, field_height,
                                     max_offscreen_height) -
-           get_player_z(pl) + field_height / 2.0 - y;
+           get_player_z(pl) + field_height / 2.0;
 }
 
 char get_aa(int x, int z) {
@@ -130,7 +128,6 @@ char field_aa(int x, int z) {
 
 void field_draw(FieldPos *field_pos) {
     int point_x, point_z, cnt = 0;
-    char grass;
     field_pos->x = get_field_screen_x(*main_pl, screen_width, field_x,
                                       max_offscreen_width);
     field_pos->z = get_field_screen_z(*main_pl, screen_height, field_z,
@@ -139,24 +136,6 @@ void field_draw(FieldPos *field_pos) {
     for (cnt = 0; cnt < 2; cnt++) {
         for (point_z = 0; point_z < field_z + 2; point_z++) {
             for (point_x = 0; point_x < field_x + 2; point_x++) {
-                if (point_z > 0 && point_z < field_y / y_angle + 2 &&
-                    point_x > 0 && point_x < field_x + 1) {
-                    grass = ' ';
-                    if (cnt == 1 && point_z != field_y / y_angle + 1) {
-                        attrset(COLOR_PAIR(3));
-                        grass = field_aa(point_x, point_z);
-                    } else if (cnt == 1 && point_z == field_y / y_angle + 1) {
-                        attrset(COLOR_PAIR(1));
-                    }
-                    mvprintw(screen_height - field_pos->old_z - point_z +
-                                 (field_z + 2) / 2,
-                             field_pos->old_x + point_x - (field_x + 2) / 2 + 1,
-                             "%c", grass);
-                    if (cnt == 1) {
-                        attrset(COLOR_PAIR(1));
-                    }
-                    continue;
-                }
                 if (point_z > 0 && point_z < field_z + 1 && point_x > 0 &&
                     point_x < field_x + 1) {
                     if (aa_flg == 1) {
@@ -164,8 +143,7 @@ void field_draw(FieldPos *field_pos) {
                             screen_height - field_pos->old_z - point_z +
                                 (field_z + 2) / 2,
                             field_pos->old_x + point_x - (field_x + 2) / 2 + 1,
-                            "%c",
-                            get_aa(point_x, point_z - field_y / y_angle - 1));
+                            "%c", get_aa(point_x, point_z - 1));
                     }
                     continue;
                 }
@@ -176,7 +154,6 @@ void field_draw(FieldPos *field_pos) {
             }
         }
         field_pos->old_x = field_pos->x;
-        field_pos->old_y = field_pos->y;
         field_pos->old_z = field_pos->z;
         attrset(COLOR_PAIR(1));
     }
@@ -207,7 +184,7 @@ void players_erase() {
                     continue;
                 mvprintw(
                     screen_height - pl->obj.draw_old_z - z +
-                        pl->obj.hitbox.old_size_z / 2 - 1,
+                        pl->obj.hitbox.old_size_z / 2,
                     pl->obj.draw_old_x + x - pl->obj.hitbox.old_size_x / 2 + 1,
                     " ");
             }
@@ -217,11 +194,10 @@ void players_erase() {
 
 /* draw the player */
 void players_draw() {
-    int x, y, z, color;
+    int x, z, color;
     Player *pl;
     PlayerList *current;
     /* draw player */
-    player_list_sort_y(pl_list);
     for (current = pl_list; current != NULL; current = current->next) {
         pl = current->pl;
         pl->obj.draw_x =
@@ -232,16 +208,12 @@ void players_draw() {
             get_main_player_screen_z(*main_pl, screen_height, field_z,
                                      max_offscreen_height) -
             get_player_z(*main_pl) + get_player_z(*pl);
-        pl->obj.draw_y = get_player_y(*pl);
         /* shadow */
         attrset(COLOR_PAIR(2));
         for (x = (int)(pl->obj.z) / 5;
              x < (pl->obj.hitbox.size_x - (int)(pl->obj.z) / 5); x++) {
-            for (y = 0; y < pl->obj.hitbox.size_y / y_angle; y++) {
-                mvprintw(screen_height - pl->obj.draw_z - y + pl->obj.z,
-                         pl->obj.draw_x + x - pl->obj.hitbox.size_x / 2 + 1,
-                         " ");
-            }
+            mvprintw(screen_height - pl->obj.draw_z + pl->obj.z + 1,
+                     pl->obj.draw_x + x - pl->obj.hitbox.size_x / 2 + 1, " ");
         }
         /* player */
         for (z = 0; z < pl->obj.hitbox.size_z; z++) {
@@ -250,16 +222,14 @@ void players_draw() {
                 if (color == 0 && get_player_aa(*pl, x, z) == ' ') continue;
                 attrset(COLOR_PAIR(color + 10 * get_player_color(*pl)));
                 mvprintw(screen_height - pl->obj.draw_z - z +
-                             pl->obj.hitbox.size_z / 2 - 1,
+                             pl->obj.hitbox.size_z / 2,
                          pl->obj.draw_x + x - pl->obj.hitbox.size_x / 2 + 1,
                          "%c", get_player_aa(*pl, x, z));
             }
         }
         pl->obj.draw_old_x = pl->obj.draw_x;
-        pl->obj.draw_old_y = pl->obj.draw_y;
         pl->obj.draw_old_z = pl->obj.draw_z;
         pl->obj.hitbox.old_size_x = pl->obj.hitbox.size_x;
-        pl->obj.hitbox.old_size_y = pl->obj.hitbox.size_y;
         pl->obj.hitbox.old_size_z = pl->obj.hitbox.size_z;
     }
     attrset(COLOR_PAIR(2));
@@ -281,17 +251,15 @@ void debug_draw(int fps, double fps_timestamp, double d_sec, double sleep_time,
     int i = 0;
     PlayerList *current;
     attrset(COLOR_PAIR(2));
-    /* draw players x,y,z,vx,vy,vz */
+    /* draw players x,z,vx,vz */
     mvprintw(1, 3, "count: %d, %f[s], timeout: %d   ", frame, d_sec,
              timeout_cnt);
     mvprintw(2, 3, "field_x: %d, field_z: %d, max_fps: %d, fps: %d   ", field_x,
              field_z, max_fps, fps);
     for (current = pl_list; current != NULL; current = current->next) {
-        mvprintw(3 + i, 3,
-                 "pl_col: %d, x: %f, y: %f, z: %f, vx: %f, vy: %f, vz: %f",
-                 current->pl->color, current->pl->obj.x, current->pl->obj.y,
-                 current->pl->obj.z, current->pl->obj.vx, current->pl->obj.vy,
-                 current->pl->obj.vz);
+        mvprintw(3 + i, 3, "pl_col: %d, x: %f, z: %f, vx: %f, vz: %f",
+                 current->pl->color, current->pl->obj.x, current->pl->obj.z,
+                 current->pl->obj.vx, current->pl->obj.vz);
         i++;
     }
     mvprintw(3 + i, 3, "frame_time:%f, d_sec:%f, sleep_time:%f   ",

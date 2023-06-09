@@ -32,27 +32,6 @@ void player_list_add(PlayerList** list, Player* player) {
         temp->next = newNode;
     }
 }
-/* sort by y */
-void player_list_sort_y(PlayerList* list) {
-    int swapped;
-    PlayerList* ptr1;
-    PlayerList* lptr = NULL;
-    if (list == NULL) return;
-    do {
-        swapped = 0;
-        ptr1 = list;
-        while (ptr1->next != lptr) {
-            if (ptr1->pl->obj.y > ptr1->next->pl->obj.y) {
-                Player* temp = ptr1->pl;
-                ptr1->pl = ptr1->next->pl;
-                ptr1->next->pl = temp;
-                swapped = 1;
-            }
-            ptr1 = ptr1->next;
-        }
-        lptr = ptr1;
-    } while (swapped);
-}
 void player_list_free(PlayerList* list) {
     PlayerList* current = list;
     PlayerList* next;
@@ -74,10 +53,6 @@ void set_player_color(Player* pl, int color) { pl->color = color; }
 void set_player_x(Player* pl, double x) {
     pl->obj.x = x;
     pl->obj.old_x = x;
-}
-void set_player_y(Player* pl, double y) {
-    pl->obj.y = y;
-    pl->obj.old_y = y;
 }
 void set_player_z(Player* pl, double z) {
     pl->obj.z = z;
@@ -129,7 +104,6 @@ void get_key_flag(KeyFlag* key) {
 }
 int get_player_color(Player pl) { return pl.color; }
 int get_player_x(Player pl) { return (int)pl.obj.x; }
-int get_player_y(Player pl) { return (int)pl.obj.y; }
 int get_player_z(Player pl) { return (int)pl.obj.z; }
 int get_player_pixel(Player pl, int px, int pz) {
     if (pl.jump_level == 1) {
@@ -162,9 +136,8 @@ char get_player_aa(Player pl, int px, int pz) {
     }
 }
 
-void player_init(Player* pl, double x, double y, double z, double vx, double vy,
-                 double vz, int hp) {
-    object_init(&pl->obj, x, y, z, vx, vy, vz, 5, 5, 5);
+void player_init(Player* pl, double x, double z, double vx, double vz, int hp) {
+    object_init(&pl->obj, x, z, vx, vz, 5, 5);
     pl->hp = hp;
     pl->act = 0;
     pl->act_cnt = 0;
@@ -178,18 +151,18 @@ void player_init(Player* pl, double x, double y, double z, double vx, double vy,
 void player_squat(Player* pl, int level) {
     if (pl->jump_level != level) {
         pl->obj.z -= pl->obj.hitbox.size_z / 2.0;
-        move_referencing_obj(&pl->obj, 0, 0, -pl->obj.hitbox.size_z / 2.0 + 0.2,
-                             0, 0, 0);
+        move_referencing_obj(&pl->obj, 0, -pl->obj.hitbox.size_z / 2.0 + 0.2, 0,
+                             0);
         if (level == 1) {
-            object_set_size(&pl->obj, 5, 5, 4);
+            object_set_size(&pl->obj, 5, 4);
         } else if (level == 2) {
-            object_set_size(&pl->obj, 5, 5, 3);
+            object_set_size(&pl->obj, 5, 3);
         } else {
-            object_set_size(&pl->obj, 5, 5, 5);
+            object_set_size(&pl->obj, 5, 5);
         }
         pl->obj.z += pl->obj.hitbox.size_z / 2.0;
-        move_referencing_obj(&pl->obj, 0, 0, pl->obj.hitbox.size_z / 2.0 + 0.2,
-                             0, 0, 2);
+        move_referencing_obj(&pl->obj, 0, pl->obj.hitbox.size_z / 2.0 + 0.2, 0,
+                             2);
     }
     pl->jump_level = level;
 }
@@ -201,21 +174,12 @@ void player_right(Player* pl, double speed) {
     pl->obj.vx = speed;
     pl->dir_x = PLAYER_RIGHT;
 }
-void player_up(Player* pl, double speed) {
-    pl->obj.vy = speed;
-    pl->dir_y = PLAYER_UP;
-}
-void player_down(Player* pl, double speed) {
-    pl->obj.vy = -speed;
-    pl->dir_y = PLAYER_DOWN;
-}
 void player_jump(Player* pl, double power) {
     if (is_collided_z(pl->obj) == 1 || pl->obj.collision_above_flag == 1) {
         pl->jump_cnt = 0;
         pl->obj.vz = power;
-        move_referencing_obj(&pl->obj, 0, 0, 0, 0, 0, power);
-    } else if (is_collided_z(pl->obj) != 1 &&
-               (is_collided_x(pl->obj) != 0 || is_collided_y(pl->obj) != 0) &&
+        move_referencing_obj(&pl->obj, 0, 0, 0, power);
+    } else if (is_collided_z(pl->obj) != 1 && (is_collided_x(pl->obj) != 0) &&
                pl->jump_cnt < 1) {
         pl->obj.vz = 55;
         if (is_collided_x(pl->obj) == 1) {
@@ -225,18 +189,9 @@ void player_jump(Player* pl, double power) {
             pl->obj.vx = 100;
             pl->dir_x = PLAYER_RIGHT;
         }
-        if (is_collided_y(pl->obj) == 1) {
-            pl->obj.vy = -100;
-            pl->dir_y = PLAYER_DOWN;
-        } else if (is_collided_y(pl->obj) == -1) {
-            pl->obj.vy = 100;
-            pl->dir_y = PLAYER_UP;
-        }
         pl->jump_cnt++;
     }
     if (pl->jump_level != 0) {
-        player_squat(pl, 0);
-    } else {
         player_squat(pl, 0);
     }
 }
@@ -244,7 +199,6 @@ void player_update(Player* pl, double d_sec) {
     object_update(&pl->obj, d_sec);
     if (is_collided_z(pl->obj) == 1) {
         pl->obj.vx *= 0.8;
-        pl->obj.vy *= 0.8;
     }
     if (pl->obj.vz != 0) {
         pl->act = 1;
@@ -291,32 +245,6 @@ void new_player_positon(Player* pl, KeyFlag key, double d_sec) {
         player_squat(pl, 1);
     } else {
         player_squat(pl, 0);
-    }
-    /* --------------w,s key-------------- */
-    if (key.up == 1) {
-        if (key.jump == 1 && d_sec - pl->jump_timestamp > 0.2) {
-            player_up(pl, 20);
-        } else if (key.squat == 1) {
-            player_up(pl, 20);
-        } else {
-            if (key.sprint == 1) {
-                player_up(pl, 60);
-            } else {
-                player_up(pl, 40);
-            }
-        }
-    } else if (key.down == 1) {
-        if (key.jump == 1 && d_sec - pl->jump_timestamp > 0.2) {
-            player_down(pl, 20);
-        } else if (key.squat == 1) {
-            player_down(pl, 20);
-        } else {
-            if (key.sprint == 1) {
-                player_down(pl, 60);
-            } else {
-                player_down(pl, 40);
-            }
-        }
     }
     /* --------------a,d key-------------- */
     if (key.left == 1) {

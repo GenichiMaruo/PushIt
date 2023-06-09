@@ -1,10 +1,9 @@
 #include "main.h"
 
-int field_x, field_y, field_z;
+int field_x, field_z;
 int screen_width, screen_height;
 int max_offscreen_width = 2, max_offscreen_height = 4;
 double gravity = 300;
-int y_angle = 2;
 static char version[10] = "0.0.2";
 Player *main_pl = NULL;
 PlayerList *pl_list = NULL;
@@ -154,8 +153,8 @@ int main(int argc, char **argv) {
 
     /* ======================init====================== */
     /* init player */
-    player_init(&pl, 0, 0, 0, 0, 0, 0, 100);
-    player_init(&pl2, 0, 0, 0, 0, 0, 0, 100);
+    player_init(&pl, 0, 0, 0, 0, 100);
+    player_init(&pl2, 0, 0, 0, 0, 100);
     player_list_add(&pl_list, &pl);
     player_list_add(&pl_list, &pl2);
     player_list_to_obj_list(pl_list, &obj_list);
@@ -266,10 +265,7 @@ int main(int argc, char **argv) {
         init_pair(24, COLOR_BLACK, COLOR_MAGENTA);
         /* get field */
         field_x = 200;
-        field_y = 200;
-        field_z = 7 + field_y / y_angle;
-        set_player_y(&pl, 5.5);
-        set_player_y(&pl2, 5.5);
+        field_z = 30;
         if (client_open_flag == 1) {
             set_player_x(&pl, field_x - 5.5);
             set_player_x(&pl2, 5.5);
@@ -300,7 +296,7 @@ int main(int argc, char **argv) {
                 screen_width = tmp_screen_width;
                 screen_height = tmp_screen_height;
             }
-            max_offscreen_height = screen_height / 2 - 5;
+            max_offscreen_height = 5;
             /* ======================debug====================== */
             if (debug_flg == 1) {
                 fps_timestamp = get_now_time();

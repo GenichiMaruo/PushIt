@@ -7,30 +7,22 @@
 #include <stdlib.h>
 typedef struct Hitbox {
     int size_x;
-    int size_y;
     int size_z;
     int old_size_x;
-    int old_size_y;
     int old_size_z;
 } Hitbox;
 typedef struct Object {
     double x;
-    double y;
     double z;
     double vx;
-    double vy;
     double vz;
     int draw_x;
-    int draw_y;
     int draw_z;
     int draw_old_x;
-    int draw_old_y;
     int draw_old_z;
     int old_x;
-    int old_y;
     int old_z;
     double old_vx;
-    double old_vy;
     double old_vz;
     int collision_above_flag;
     int collision_enable;
@@ -43,15 +35,15 @@ typedef struct ObjList {
     struct ObjList* next;
 } ObjList;
 
-void move_referencing_obj(Object* obj, double x, double y, double z, double vx,
-                          double vy, double vz);
+void move_referencing_obj(Object* obj, double x, double z, double vx,
+                          double vz);
 
 void obj_list_add(ObjList** list, Object* obj);
 void free_obj_list(ObjList* list);
 
-void object_init(Object* obj, double x, double y, double z, double vx,
-                 double vy, double vz, int size_x, int size_y, int size_z);
-void object_set_size(Object* obj, int size_x, int size_y, int size_z);
+void object_init(Object* obj, double x, double z, double vx, double vz,
+                 int size_x, int size_z);
+void object_set_size(Object* obj, int size_x, int size_z);
 
 void object_update(Object* main_obj, double d_sec);
 
