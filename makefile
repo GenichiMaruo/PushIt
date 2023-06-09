@@ -2,7 +2,7 @@ CC = gcc
 CFLAGS = -Wall -Wextra
 LIBS = -lncurses
 
-SRCS = main.c player.c object.c windowmng.c error.c
+SRCS = main.c player.c object.c windowmng.c box.c error.c
 OBJS = $(SRCS:.c=.o)
 EXEC = main.exe
 
