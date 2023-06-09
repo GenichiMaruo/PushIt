@@ -1,4 +1,4 @@
-#include "main.h"
+#include "../include/main.h"
 
 int field_x, field_z;
 int screen_width, screen_height;

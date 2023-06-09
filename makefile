@@ -1,10 +1,13 @@
 CC = gcc
 CFLAGS = -Wall -Wextra
 LIBS = -lncurses
+SRCDIR = src
+INCDIR = include
+BUILDDIR = build
 
-SRCS = main.c player.c object.c windowmng.c box.c error.c
-OBJS = $(SRCS:.c=.o)
-EXEC = main.exe
+SRCS = $(wildcard $(SRCDIR)/*.c)
+OBJS = $(patsubst $(SRCDIR)/%.c, $(BUILDDIR)/%.o, $(SRCS))
+EXEC = pushit.exe
 
 .PHONY: all clean force
 
@@ -13,8 +16,8 @@ all: $(EXEC)
 $(EXEC): $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) -o $@ $(LIBS)
 
-%.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+$(BUILDDIR)/%.o: $(SRCDIR)/%.c
+	$(CC) $(CFLAGS) -I$(INCDIR) -c $< -o $@
 
 force: clean all
 

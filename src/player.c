@@ -1,4 +1,4 @@
-#include "player.h"
+#include "../include/player.h"
 
 int dot_art_n[5][5] = {{1, 1, 1, 1, 0},
                        {1, 1, 1, 1, 0},

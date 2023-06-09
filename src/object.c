@@ -1,4 +1,4 @@
-#include "object.h"
+#include "../include/object.h"
 
 extern int field_x, field_z;
 extern double gravity;
