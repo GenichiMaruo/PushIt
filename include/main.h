@@ -19,7 +19,7 @@
 #include "error.h"
 #include "object.h"
 #include "player.h"
-#include "windowmng.h"
+#include "window_mng.h"
 
 #define PORT 50000
 #define MAX_CLIENTS 2

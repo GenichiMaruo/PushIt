@@ -1,4 +1,4 @@
-#include "../include/windowmng.h"
+#include "../include/window_mng.h"
 
 struct timespec start_time, end_time, end_time2;
 extern int field_x, field_z;
