@@ -23,3 +23,6 @@ force: clean all
 
 clean:
 	rm -f $(OBJS) $(EXEC)
+
+# Create build directory if it doesn't exist
+$(shell mkdir -p $(BUILDDIR))

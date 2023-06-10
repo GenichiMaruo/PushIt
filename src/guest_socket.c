@@ -33,7 +33,7 @@ void guest_socket_init(char *ip_addr) {
                 "socket failed\n");
     memset(&address, '0', sizeof(address));
     address.sin_family = AF_INET;
-    address.sin_port = htons(PORT);
+    address.sin_port = htons(port);
     /* Convert IPv4 and IPv6 addresses from text to binary form */
     error_check(inet_pton(AF_INET, ip_addr, &address.sin_addr) <= 0,
                 "Invalid address/ Address not supported \n");

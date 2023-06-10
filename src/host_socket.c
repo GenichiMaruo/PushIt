@@ -14,7 +14,7 @@ void host_socket_init() {
                 "socket failed\n");
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
-    address.sin_port = htons(PORT);
+    address.sin_port = htons(port);
     /* bind the socket to localhost port 50000 */
     error_check(
         bind(host_server_fd, (struct sockaddr *)&address, sizeof(address)) < 0,

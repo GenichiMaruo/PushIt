@@ -11,18 +11,26 @@
 #include <string.h>
 #include <sys/mman.h>
 #include <sys/socket.h>
+#include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/wait.h>
 #include <unistd.h>
 #include <windows.h>
 
+#include "config.h"
 #include "error.h"
 #include "guest_socket.h"
 #include "host_socket.h"
 #include "object.h"
 #include "player.h"
+#include "version.h"
 #include "window_mng.h"
 
-#define MAX_CLIENTS 2
+extern int port;
+extern int max_clients;
+extern int max_fps;
+extern double gravity;
+extern int max_offscreen_width;
+extern int max_offscreen_height;
 
 #endif /* MAIN_H */

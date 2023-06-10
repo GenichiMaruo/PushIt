@@ -2,14 +2,11 @@
 
 int field_x, field_z;
 int screen_width, screen_height;
-int max_offscreen_width = 2, max_offscreen_height = 4;
-double gravity = 300;
-static char version[10] = "0.0.2";
 Player *main_pl = NULL;
 PlayerList *pl_list = NULL;
 ObjList *obj_list = NULL;
 short int debug_flg = 0, aa_flg = 0;
-int max_fps = 60, frame = 0, timeout_cnt = 0;
+int frame = 0, timeout_cnt = 0;
 struct sockaddr_in address;
 
 int main(int argc, char **argv) {
@@ -51,7 +48,7 @@ int main(int argc, char **argv) {
                 return 0;
             } else if (strcmp(argv[i], "-v") == 0 ||
                        strcmp(argv[i], "--version") == 0) {
-                fprintf(stderr, "version: %s\n", version);
+                fprintf(stderr, "version: %s\n", PROGRAM_VERSION);
                 return 0;
             } else if (strcmp(argv[i], "-d") == 0 ||
                        strcmp(argv[i], "--debug") == 0) {
@@ -90,6 +87,8 @@ int main(int argc, char **argv) {
     }
 
     /* ======================init====================== */
+    /* init config */
+    config_init();
     /* init player */
     player_init(&pl, 0, 0, 0, 0, 100);
     player_init(&pl2, 0, 0, 0, 0, 100);

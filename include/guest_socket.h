@@ -2,8 +2,6 @@
 #ifndef __GUEST_SOCKET_H
 #define __GUEST_SOCKET_H
 
-#define PORT 50000
-
 #include "data_socket.h"
 #include "error.h"
 #include "main.h"

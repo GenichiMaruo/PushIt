@@ -7,6 +7,7 @@
         "windowmng.h": "c",
         "guest_socket.h": "c",
         "main.h": "c",
-        "data_socket.h": "c"
+        "data_socket.h": "c",
+        "host_socket.h": "c"
     }
 }
