@@ -1,8 +1,0 @@
-{
-    "port": 50000,
-    "max_clients": 2,
-    "max_fps": 60,
-    "gravity": 300.0,
-    "max_offscreen_width": 2,
-    "max_offscreen_height": 4
-}

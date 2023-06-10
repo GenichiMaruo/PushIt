@@ -15,13 +15,15 @@ EXEC = pushit.exe
 all: $(EXEC)
 
 $(EXEC): $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS) -o $@ $(LIBS)
+	@$(CC) $(CFLAGS) $(OBJS) -o $@ $(LIBS)
+	@echo "Executable '$(EXEC)' generated."
 
 $(BUILDDIR)/%.o: $(SRCDIR)/%.c
 	@mkdir -p $(OBJSUBDIRS)
-	$(CC) $(CFLAGS) -I$(INCDIR) -c $< -o $@
+	@echo "Compiling $<..."
+	@$(CC) $(CFLAGS) -I$(INCDIR) -c $< -o $@
 
 force: clean all
 
 clean:
-	rm -f $(OBJS) $(EXEC)
+	@rm -f $(OBJS) $(EXEC)
