@@ -7,4 +7,6 @@
 void config_init();
 void get_config();
 
+void config_check();
+
 #endif /* __CONFIG_H */

@@ -70,3 +70,24 @@ void get_config() {
         fclose(fp);
     }
 }
+
+void config_check(void) {
+    if (port <= 0) {
+        error("port must be positive integer\n");
+    }
+    if (max_clients <= 0) {
+        error("max_clients must be positive integer\n");
+    }
+    if (max_fps <= 0) {
+        error("max_fps must be positive integer\n");
+    }
+    if (gravity <= 0) {
+        error("gravity must be positive integer\n");
+    }
+    if (max_offscreen_width <= 0) {
+        error("max_offscreen_width must be positive integer\n");
+    }
+    if (max_offscreen_height <= 0) {
+        error("max_offscreen_height must be positive integer\n");
+    }
+}
