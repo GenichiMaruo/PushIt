@@ -11,6 +11,7 @@
         "host_socket.h": "c",
         "version.h": "c",
         "_object_group.h": "c",
-        "external_libs.h": "c"
+        "external_libs.h": "c",
+        "window_mng.h": "c"
     }
 }
