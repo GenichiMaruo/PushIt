@@ -14,4 +14,7 @@ typedef struct SharedData {
     short int lock_flag;
 } SharedData;
 
+void shared_data_init(SharedData *sd);
+void shared_data_copy(SharedData *sd, SharedData *sd2);
+
 #endif /* DATA_SOCKET_H */
