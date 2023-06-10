@@ -15,9 +15,7 @@ int main(int argc, char **argv) {
     double d_sec = 0, fps_timestamp = 0;
     pid_t pid;
     Player pl, pl2;
-    PlayerList *tmp_pl_list = NULL;
-    SharedData *post_shared_data;
-    SharedData *return_shared_data;
+    SharedData *post_shared_data, *return_shared_data;
     SharedData shd_players[2];
     KeyFlag key_flag = {0}, p2_key_flag = {0};
     FieldPos field_pos;
@@ -28,7 +26,7 @@ int main(int argc, char **argv) {
     /* ======================init====================== */
     /* init config */
     config_init();
-    /* open socket */
+    /* init socket */
     if (argment_flag.server == 1) {
         host_socket_init();
     } else if (argment_flag.client == 1) {
@@ -184,7 +182,7 @@ int main(int argc, char **argv) {
 
             /* ======================update====================== */
             /* update players */
-            for (tmp_pl_list = pl_list; tmp_pl_list != NULL;
+            for (PlayerList *tmp_pl_list = pl_list; tmp_pl_list != NULL;
                  tmp_pl_list = tmp_pl_list->next) {
                 player_update(tmp_pl_list->pl, 1.0 / max_fps);
             }
@@ -220,7 +218,8 @@ int main(int argc, char **argv) {
                 if (jump > 0) {
                     players_erase();
                     for (int i = 0; i < jump; i++) {
-                        for (tmp_pl_list = pl_list; tmp_pl_list != NULL;
+                        for (PlayerList *tmp_pl_list = pl_list;
+                             tmp_pl_list != NULL;
                              tmp_pl_list = tmp_pl_list->next) {
                             player_update(tmp_pl_list->pl, 1.0 / max_fps);
                         }
