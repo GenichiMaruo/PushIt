@@ -17,6 +17,7 @@
 #include <unistd.h>
 #include <windows.h>
 
+#include "argment.h"
 #include "config.h"
 #include "error.h"
 #include "guest_socket.h"

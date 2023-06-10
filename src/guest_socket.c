@@ -38,6 +38,7 @@ void guest_socket_init(char *ip_addr) {
     error_check(inet_pton(AF_INET, ip_addr, &address.sin_addr) <= 0,
                 "Invalid address/ Address not supported \n");
     /* connect the socket to the server address */
+    fprintf(stderr, "connecting...\n");
     error_check(connect(guest_server_fd, (struct sockaddr *)&address,
                         sizeof(address)) < 0,
                 "Connection Failed \n");
