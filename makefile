@@ -4,9 +4,10 @@ LIBS = -lncurses
 SRCDIR = src
 INCDIR = include
 BUILDDIR = build
+OBJSUBDIRS := $(shell find $(SRCDIR) -type d -printf "$(BUILDDIR)/%P ")
 
-SRCS = $(wildcard $(SRCDIR)/*.c)
-OBJS = $(patsubst $(SRCDIR)/%.c, $(BUILDDIR)/%.o, $(SRCS))
+SRCS := $(shell find $(SRCDIR) -name '*.c')
+OBJS := $(patsubst $(SRCDIR)/%.c, $(BUILDDIR)/%.o, $(SRCS))
 EXEC = pushit.exe
 
 .PHONY: all clean force
@@ -17,12 +18,10 @@ $(EXEC): $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) -o $@ $(LIBS)
 
 $(BUILDDIR)/%.o: $(SRCDIR)/%.c
+	@mkdir -p $(OBJSUBDIRS)
 	$(CC) $(CFLAGS) -I$(INCDIR) -c $< -o $@
 
 force: clean all
 
 clean:
 	rm -f $(OBJS) $(EXEC)
-
-# Create build directory if it doesn't exist
-$(shell mkdir -p $(BUILDDIR))

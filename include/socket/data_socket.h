@@ -2,7 +2,7 @@
 #ifndef DATA_SOCKET_H
 #define DATA_SOCKET_H
 
-#include "player.h"
+#include "../player.h"
 
 typedef struct SharedData {
     int frame;

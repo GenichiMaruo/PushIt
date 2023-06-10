@@ -2,10 +2,10 @@
 #ifndef __GUEST_SOCKET_H
 #define __GUEST_SOCKET_H
 
+#include "../error.h"
+#include "../main.h"
+#include "../version.h"
 #include "data_socket.h"
-#include "error.h"
-#include "main.h"
-#include "version.h"
 
 void guest_socket_init(char *ip_addr);
 void guest_socket_close();

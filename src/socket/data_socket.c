@@ -1,6 +1,4 @@
-#include "../include/data_socket.h"
-
-#include "data_socket.h"
+#include "../../include/socket/data_socket.h"
 
 void shared_data_init(SharedData* sd) {
     sd->frame = 0;

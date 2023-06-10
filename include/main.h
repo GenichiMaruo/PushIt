@@ -17,11 +17,11 @@
 #include <unistd.h>
 #include <windows.h>
 
+#include "./socket/guest_socket.h"
+#include "./socket/host_socket.h"
 #include "argment.h"
 #include "config.h"
 #include "error.h"
-#include "guest_socket.h"
-#include "host_socket.h"
 #include "object.h"
 #include "player.h"
 #include "version.h"

@@ -2,10 +2,10 @@
 #ifndef __HOST_SOCKET_H
 #define __HOST_SOCKET_H
 
+#include "../error.h"
+#include "../main.h"
+#include "../version.h"
 #include "data_socket.h"
-#include "error.h"
-#include "main.h"
-#include "version.h"
 
 void host_socket_init();
 void host_socket_close();
