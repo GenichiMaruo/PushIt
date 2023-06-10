@@ -7,6 +7,7 @@
 #include <ncurses.h>
 #include <sys/time.h>
 
+#include "argment.h"
 #include "error.h"
 #include "player.h"
 

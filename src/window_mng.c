@@ -4,7 +4,7 @@ struct timespec start_time, end_time, end_time2;
 extern int field_x, field_z;
 extern int screen_width, screen_height;
 extern int max_offscreen_width, max_offscreen_height;
-extern short int aa_flg, debug_flg;
+extern ArgmentFlag argment_flag;
 extern Player *main_pl;
 extern PlayerList *pl_list;
 extern int max_fps, frame, timeout_cnt;
@@ -140,7 +140,7 @@ void field_draw(FieldPos *field_pos) {
             for (point_x = 0; point_x < field_x + 2; point_x++) {
                 if (point_z > 0 && point_z < field_z + 1 && point_x > 0 &&
                     point_x < field_x + 1) {
-                    if (aa_flg == 1) {
+                    if (argment_flag.aa == 1) {
                         mvprintw(
                             screen_height - field_pos->old_z - point_z +
                                 (field_z + 2) / 2,
@@ -171,7 +171,7 @@ void players_erase() {
     for (current = pl_list; current != NULL; current = current->next) {
         pl = current->pl;
         /*debug*/
-        if (debug_flg == 1) {
+        if (argment_flag.debug == 1) {
             /* hp clear */
             mvprintw(screen_height - pl->obj.draw_old_z -
                          pl->obj.hitbox.old_size_z / 2 - 2,
@@ -236,7 +236,7 @@ void players_draw() {
     }
     attrset(COLOR_PAIR(2));
     /*debug*/
-    if (debug_flg == 1) {
+    if (argment_flag.debug == 1) {
         for (current = pl_list; current != NULL; current = current->next) {
             pl = current->pl;
             /* hp */
