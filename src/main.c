@@ -18,8 +18,8 @@ int main(int argc, char **argv) {
     PlayerList *tmp_pl_list = NULL;
     SharedData *post_shared_data;
     SharedData *return_shared_data;
-    KeyFlag key_flag = {0}, p2_key_flag = {0};
     SharedData shd_players[2];
+    KeyFlag key_flag = {0}, p2_key_flag = {0};
     FieldPos field_pos;
 
     /* ======================argment====================== */
@@ -107,24 +107,7 @@ int main(int argc, char **argv) {
     } else {
         /* ~~~~~~~~~~~~~~~~~~~parent process~~~~~~~~~~~~~~~~~~~ */
         /* init ncurses */
-        initscr();
-        curs_set(0);
-        noecho();
-        timeout(0);
-        /* init color */
-        start_color();
-        init_pair(1, COLOR_BLACK, COLOR_WHITE);
-        init_pair(2, COLOR_WHITE, COLOR_BLACK);
-        init_pair(3, COLOR_WHITE, COLOR_GREEN);
-        init_pair(11, COLOR_BLACK, COLOR_YELLOW);
-        init_pair(12, COLOR_BLACK, COLOR_GREEN);
-        init_pair(13, COLOR_BLACK, COLOR_BLUE);
-        init_pair(14, COLOR_BLACK, COLOR_CYAN);
-
-        init_pair(21, COLOR_BLACK, COLOR_YELLOW);
-        init_pair(22, COLOR_BLACK, COLOR_GREEN);
-        init_pair(23, COLOR_BLACK, COLOR_RED);
-        init_pair(24, COLOR_BLACK, COLOR_MAGENTA);
+        init_ncurses();
         /* get field */
         field_x = 200;
         field_z = 30;

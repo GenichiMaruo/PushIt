@@ -11,6 +11,28 @@ extern int max_fps, frame, timeout_cnt;
 
 char *aa[121] = {0};
 
+void init_ncurses() {
+    /* init ncurses */
+    initscr();
+    curs_set(0);
+    noecho();
+    timeout(0);
+    /* init color */
+    start_color();
+    init_pair(1, COLOR_BLACK, COLOR_WHITE);
+    init_pair(2, COLOR_WHITE, COLOR_BLACK);
+    init_pair(3, COLOR_WHITE, COLOR_GREEN);
+    init_pair(11, COLOR_BLACK, COLOR_YELLOW);
+    init_pair(12, COLOR_BLACK, COLOR_GREEN);
+    init_pair(13, COLOR_BLACK, COLOR_BLUE);
+    init_pair(14, COLOR_BLACK, COLOR_CYAN);
+
+    init_pair(21, COLOR_BLACK, COLOR_YELLOW);
+    init_pair(22, COLOR_BLACK, COLOR_GREEN);
+    init_pair(23, COLOR_BLACK, COLOR_RED);
+    init_pair(24, COLOR_BLACK, COLOR_MAGENTA);
+}
+
 void import_from_txt() {
     FILE *fp;
     char *fname = "aa.txt";

@@ -8,6 +8,8 @@
 #include "./object/_object_group.h"
 #include "argment.h"
 
+void init_ncurses();
+
 void get_start_time();
 void get_end_time();
 double calc_time();
