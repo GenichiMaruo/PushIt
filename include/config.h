@@ -1,6 +1,6 @@
 /* include guard */
-#ifndef __CONFIG_H
-#define __CONFIG_H
+#ifndef CONFIG_H
+#define CONFIG_H
 
 #include "main.h"
 
@@ -9,4 +9,4 @@ void get_config();
 
 void config_check();
 
-#endif /* __CONFIG_H */
+#endif /* CONFIG_H */
