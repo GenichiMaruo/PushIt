@@ -4,15 +4,10 @@
 
 #define PORT 50000
 
-#include <netinet/in.h>
-#include <stdio.h>
-#include <string.h>
-#include <sys/socket.h>
-#include <unistd.h>
-
 #include "data_socket.h"
 #include "error.h"
 #include "main.h"
+#include "version.h"
 
 void host_socket_init();
 void host_socket_close();

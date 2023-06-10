@@ -4,6 +4,9 @@
         "error.h": "c",
         "object.h": "c",
         "player.h": "c",
-        "windowmng.h": "c"
+        "windowmng.h": "c",
+        "guest_socket.h": "c",
+        "main.h": "c",
+        "data_socket.h": "c"
     }
 }

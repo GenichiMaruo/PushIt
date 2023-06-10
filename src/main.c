@@ -10,6 +10,7 @@ PlayerList *pl_list = NULL;
 ObjList *obj_list = NULL;
 short int debug_flg = 0, aa_flg = 0;
 int max_fps = 60, frame = 0, timeout_cnt = 0;
+struct sockaddr_in address;
 
 int main(int argc, char **argv) {
     int i, jump, break_flg = 0;
@@ -26,12 +27,8 @@ int main(int argc, char **argv) {
     SharedData shd_players[2];
     FieldPos field_pos;
 
-    /* server */
-    int server_fd;
-    struct sockaddr_in address;
     short int server_open_flag = 0;
     short int client_open_flag = 0;
-    char opponent_version[10];
     char *ip_addr;
     int frame_delta = 0;
 
@@ -82,50 +79,7 @@ int main(int argc, char **argv) {
                 /* get ip address from argment */
                 ip_addr = argv[i + 1];
                 i++;
-
-                /* Check if the input is "localhost" and replace it with the
-                 * corresponding IP address */
-                if (strcmp(ip_addr, "localhost") == 0) {
-                    ip_addr = "127.0.0.1";
-                }
-                /* get ip address from hostname */
-                if (strcmp(ip_addr, "localhost") != 0) {
-                    struct hostent *host;
-                    struct in_addr **addr_list;
-                    int i;
-                    if ((host = gethostbyname(ip_addr)) == NULL) {
-                        error("gethostbyname\n");
-                    }
-                    addr_list = (struct in_addr **)host->h_addr_list;
-                    for (i = 0; addr_list[i] != NULL; i++) {
-                        ip_addr = inet_ntoa(*addr_list[i]);
-                    }
-                }
-                /* print ip address */
-                printf("ip_addr: %s\n", ip_addr);
-                /* Creating socket file descriptor */
-                error_check((server_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0,
-                            "socket failed\n");
-                memset(&address, '0', sizeof(address));
-                address.sin_family = AF_INET;
-                address.sin_port = htons(PORT);
-                /* Convert IPv4 and IPv6 addresses from text to binary form */
-                error_check(inet_pton(AF_INET, ip_addr, &address.sin_addr) <= 0,
-                            "Invalid address/ Address not supported \n");
-                /* connect the socket to the server address */
-                error_check(connect(server_fd, (struct sockaddr *)&address,
-                                    sizeof(address)) < 0,
-                            "Connection Failed \n");
-                /* send client version to server */
-                error_check(send(server_fd, &version, sizeof(version), 0) < 0,
-                            "send\n");
-                /* read server version */
-                error_check(read(server_fd, &opponent_version,
-                                 sizeof(opponent_version)) < 0,
-                            "read\n");
-                /* check version */
-                error_check(strcmp(opponent_version, version) != 0,
-                            "version mismatch\n");
+                guest_socket_init(ip_addr);
             } else if (strcmp(argv[i], "--aa") == 0) {
                 aa_flg = 1;
             } else {
@@ -198,13 +152,9 @@ int main(int argc, char **argv) {
                 host_socket_recv(&shd_players[1]);
             } else if (client_open_flag == 1) {
                 /* send new shared data to server */
-                error_check(
-                    send(server_fd, &shd_players[0], sizeof(SharedData), 0) < 0,
-                    "send\n");
+                guest_socket_send(&shd_players[0]);
                 /* read the shared data from server */
-                error_check(
-                    read(server_fd, &shd_players[1], sizeof(SharedData)) < 0,
-                    "read\n");
+                guest_socket_recv(&shd_players[1]);
             }
             Sleep((1000.0 / max_fps) / 2.0);
         }
@@ -216,9 +166,9 @@ int main(int argc, char **argv) {
             host_socket_close();
         } else if (client_open_flag == 1) {
             shd_players[0].break_flag = 1;
-            send(server_fd, &shd_players[0], sizeof(SharedData), 0);
+            guest_socket_send(&shd_players[0]);
             /* close socket */
-            close(server_fd);
+            guest_socket_close();
         }
         fprintf(stderr, "child process end\n");
         return 0;
