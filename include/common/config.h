@@ -2,7 +2,7 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#include "main.h"
+#include "../main.h"
 
 void config_init();
 void get_config();

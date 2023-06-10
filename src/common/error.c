@@ -1,4 +1,4 @@
-#include "../include/error.h"
+#include "../../include/common/error.h"
 
 /* print error message and exit */
 void error(char* msg, ...) {

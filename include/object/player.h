@@ -2,8 +2,7 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include <windows.h>
-
+#include "../common/external_libs.h"
 #include "object.h"
 typedef struct Player {
     Object obj;

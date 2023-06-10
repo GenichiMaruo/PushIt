@@ -4,12 +4,9 @@
 
 #define ART_FOLDER_PATH "art/"
 
-#include <ncurses.h>
-#include <sys/time.h>
-
-#include "./object/player.h"
+#include "./common/_common_group.h"
+#include "./object/_object_group.h"
 #include "argment.h"
-#include "error.h"
 
 void get_start_time();
 void get_end_time();

@@ -2,9 +2,7 @@
 #ifndef OBJECT_H
 #define OBJECT_H
 
-#include <stddef.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include "../common/external_libs.h"
 typedef struct Hitbox {
     int size_x;
     int size_z;

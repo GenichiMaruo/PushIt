@@ -2,13 +2,10 @@
 #ifndef MAIN_H
 #define MAIN_H
 
+#include "./common/_common_group.h"
 #include "./object/_object_group.h"
 #include "./socket/_socket_group.h"
 #include "argment.h"
-#include "config.h"
-#include "error.h"
-#include "external_libs.h"
-#include "version.h"
 #include "window_mng.h"
 
 extern int port;

@@ -2,9 +2,8 @@
 #ifndef __GUEST_SOCKET_H
 #define __GUEST_SOCKET_H
 
-#include "../error.h"
+#include "../common/_common_group.h"
 #include "../main.h"
-#include "../version.h"
 #include "data_socket.h"
 
 void guest_socket_init(char *ip_addr);

@@ -1,6 +1,4 @@
-#include <stdarg.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include "external_libs.h"
 
 void error(char* msg, ...);
 

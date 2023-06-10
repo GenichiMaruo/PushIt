@@ -1,4 +1,4 @@
-#include "../include/config.h"
+#include "../../include/common/config.h"
 
 int port;
 int max_clients;
@@ -42,7 +42,7 @@ void get_config() {
         fprintf(fp, "    \"gravity\": %.1f,\n", gravity);
         fprintf(fp, "    \"max_offscreen_width\": %d,\n", max_offscreen_width);
         fprintf(fp, "    \"max_offscreen_height\": %d\n", max_offscreen_height);
-        fprintf(fp, "}\n");
+        fprintf(fp, "}");
         fclose(fp);
     } else {
         // configファイルがある場合
