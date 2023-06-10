@@ -9,6 +9,8 @@
         "main.h": "c",
         "data_socket.h": "c",
         "host_socket.h": "c",
-        "version.h": "c"
+        "version.h": "c",
+        "_object_group.h": "c",
+        "external_libs.h": "c"
     }
 }
