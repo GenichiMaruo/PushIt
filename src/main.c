@@ -2,12 +2,12 @@
 
 int field_x, field_z;
 int screen_width, screen_height;
+int frame = 0, timeout_cnt = 0;
+char *ip_addr;
+struct sockaddr_in address;
 Player *main_pl = NULL;
 PlayerList *pl_list = NULL;
 ObjList *obj_list = NULL;
-int frame = 0, timeout_cnt = 0;
-struct sockaddr_in address;
-char *ip_addr;
 ArgmentFlag argment_flag = {0};
 
 int main(int argc, char **argv) {
