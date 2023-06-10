@@ -17,21 +17,12 @@
 #include <windows.h>
 
 #include "error.h"
+#include "guest_socket.h"
+#include "host_socket.h"
 #include "object.h"
 #include "player.h"
 #include "window_mng.h"
 
-#define PORT 50000
 #define MAX_CLIENTS 2
-
-typedef struct SharedData {
-    int frame;
-    int player_id;
-    Player pl;
-    KeyFlag key;
-    short int read_flag;
-    short int break_flag;
-    short int lock_flag;
-} SharedData;
 
 #endif /* MAIN_H */

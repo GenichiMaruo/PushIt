@@ -27,9 +27,8 @@ int main(int argc, char **argv) {
     FieldPos field_pos;
 
     /* server */
-    int server_fd, new_socket;
+    int server_fd;
     struct sockaddr_in address;
-    int addrlen = sizeof(address);
     short int server_open_flag = 0;
     short int client_open_flag = 0;
     char opponent_version[10];
@@ -75,36 +74,7 @@ int main(int argc, char **argv) {
                        client_open_flag == 0 && server_open_flag == 0) {
                 server_open_flag = 1;
                 /* ======================server====================== */
-                /* Creating socket file descriptor */
-                error_check((server_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0,
-                            "socket failed\n");
-                address.sin_family = AF_INET;
-                address.sin_addr.s_addr = INADDR_ANY;
-                address.sin_port = htons(PORT);
-                /* bind the socket to localhost port 50000 */
-                error_check(bind(server_fd, (struct sockaddr *)&address,
-                                 sizeof(address)) < 0,
-                            "bind failed\n");
-                fprintf(stderr, "waiting for connection...\n");
-                /* try to specify maximum of 3 pending connections for the
-                 * master socket */
-                error_check(listen(server_fd, 3) < 0, "listen\n");
-                /* accept the incoming connection */
-                error_check(
-                    (new_socket = accept(server_fd, (struct sockaddr *)&address,
-                                         (socklen_t *)&addrlen)) < 0,
-                    "accept\n");
-                /* read client version */
-                error_check(read(new_socket, &opponent_version,
-                                 sizeof(opponent_version)) < 0,
-                            "read\n");
-                /* send server version to client */
-                error_check(send(new_socket, &version, sizeof(version), 0) < 0,
-                            "send\n");
-                /* check version */
-                error_check(strcmp(opponent_version, version) != 0,
-                            "version mismatch\n");
-
+                host_socket_init();
             } else if (strcmp(argv[i], "--client") == 0 &&
                        client_open_flag == 0 && server_open_flag == 0) {
                 client_open_flag = 1;
@@ -223,13 +193,9 @@ int main(int argc, char **argv) {
             }
             if (server_open_flag == 1) {
                 /* send new shared data to client */
-                error_check(send(new_socket, &shd_players[0],
-                                 sizeof(SharedData), 0) < 0,
-                            "send\n");
+                host_socket_send(&shd_players[0]);
                 /* read the shared data from client */
-                error_check(
-                    read(new_socket, &shd_players[1], sizeof(SharedData)) < 0,
-                    "read\n");
+                host_socket_recv(&shd_players[1]);
             } else if (client_open_flag == 1) {
                 /* send new shared data to server */
                 error_check(
@@ -245,9 +211,9 @@ int main(int argc, char **argv) {
         /* send break flag to opponent */
         if (server_open_flag == 1) {
             shd_players[0].break_flag = 1;
-            send(new_socket, &shd_players[0], sizeof(SharedData), 0);
+            host_socket_send(&shd_players[0]);
             /* close socket */
-            close(new_socket);
+            host_socket_close();
         } else if (client_open_flag == 1) {
             shd_players[0].break_flag = 1;
             send(server_fd, &shd_players[0], sizeof(SharedData), 0);
