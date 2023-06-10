@@ -2,29 +2,12 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-#include <arpa/inet.h>
-#include <ncurses.h>
-#include <netdb.h>
-#include <netinet/in.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/mman.h>
-#include <sys/socket.h>
-#include <sys/stat.h>
-#include <sys/time.h>
-#include <sys/wait.h>
-#include <unistd.h>
-#include <windows.h>
-
-#include "./object/box.h"
-#include "./object/object.h"
-#include "./object/player.h"
-#include "./socket/guest_socket.h"
-#include "./socket/host_socket.h"
+#include "./object/_object_group.h"
+#include "./socket/_socket_group.h"
 #include "argment.h"
 #include "config.h"
 #include "error.h"
+#include "external_libs.h"
 #include "version.h"
 #include "window_mng.h"
 

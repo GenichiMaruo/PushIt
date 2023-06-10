@@ -1,0 +1,14 @@
+#include <arpa/inet.h>
+#include <ncurses.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/mman.h>
+#include <sys/socket.h>
+#include <sys/stat.h>
+#include <sys/time.h>
+#include <sys/wait.h>
+#include <unistd.h>
+#include <windows.h>
