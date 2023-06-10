@@ -7,9 +7,9 @@
 #include <ncurses.h>
 #include <sys/time.h>
 
+#include "./object/player.h"
 #include "argment.h"
 #include "error.h"
-#include "player.h"
 
 void get_start_time();
 void get_end_time();

@@ -17,13 +17,14 @@
 #include <unistd.h>
 #include <windows.h>
 
+#include "./object/box.h"
+#include "./object/object.h"
+#include "./object/player.h"
 #include "./socket/guest_socket.h"
 #include "./socket/host_socket.h"
 #include "argment.h"
 #include "config.h"
 #include "error.h"
-#include "object.h"
-#include "player.h"
 #include "version.h"
 #include "window_mng.h"
 

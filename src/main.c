@@ -58,8 +58,7 @@ int main(int argc, char **argv) {
         error("fork failed\n");
     } else if (pid == 0) {
         /* ~~~~~~~~~~~~~~~~~~~child process~~~~~~~~~~~~~~~~~~~ */
-        while (post_shared_data->break_flag == 0 ||
-               return_shared_data->break_flag == 0) {
+        while (post_shared_data->break_flag == 0) {
             if (post_shared_data->lock_flag == 0 &&
                 post_shared_data->read_flag == 0) {
                 /* lock shared data */

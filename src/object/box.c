@@ -1,4 +1,4 @@
-#include "../include/box.h"
+#include "../../include/object/box.h"
 
 /* initialize box */
 void box_init(Box* box, double x, double z, int size_x, int size_z, int color) {
