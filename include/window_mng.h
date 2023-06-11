@@ -15,6 +15,8 @@ void get_end_time();
 double calc_time();
 double get_now_time();
 
+void get_screen_size();
+
 int get_main_player_screen_x(Player pl, int screen_width, int field_width,
                              int max_offscreen_width);
 int get_main_player_screen_z(Player pl, int screen_height, int field_height,

@@ -78,6 +78,13 @@ double calc_time() {
     return d_sec;
 }
 
+void get_screen_size() {
+    int tmp_screen_width, tmp_screen_height;
+    getmaxyx(stdscr, tmp_screen_height, tmp_screen_width);
+    screen_width = tmp_screen_width - 2;
+    screen_height = tmp_screen_height - 2;
+}
+
 /* get main player screen position x */
 int get_main_player_screen_x(Player pl, int screen_width, int field_width,
                              int max_offscreen_width) {
