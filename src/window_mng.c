@@ -281,12 +281,13 @@ void debug_draw(int fps, double fps_timestamp, double d_sec, double sleep_time,
     mvprintw(2, 3, "field_x: %d, field_z: %d, max_fps: %d, fps: %d   ", field_x,
              field_z, max_fps, fps);
     for (current = pl_list; current != NULL; current = current->next) {
-        mvprintw(3 + i, 3, "pl_col: %d, x: %f, z: %f, vx: %f, vz: %f",
+        mvprintw(3 + i, 3,
+                 "pl_col: %d, x: %.4f, z: %.4f, vx: %.4f, vz: %.4f   ",
                  current->pl->color, current->pl->obj.x, current->pl->obj.z,
                  current->pl->obj.vx, current->pl->obj.vz);
         i++;
     }
-    mvprintw(3 + i, 3, "frame_time:%f, d_sec:%f, sleep_time:%f   ",
+    mvprintw(3 + i, 3, "frame_time:%.4f, d_sec:%.4f, sleep_time:%.4f   ",
              get_now_time() - fps_timestamp, d_sec, sleep_time);
     i++;
     mvprintw(3 + i, 3, "frame_delta:%d   ", frame_delta);

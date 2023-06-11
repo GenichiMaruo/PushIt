@@ -129,45 +129,61 @@ void collision(Object* obj1, Object* obj2) {
 
     if (ax < obj1->hitbox.size_x / 2.0 + obj2->hitbox.size_x / 2.0 &&
         az < obj1->hitbox.size_z / 2.0 + obj2->hitbox.size_z / 2.0) {
-        /* x colide */
-        /* if not colide wall */
-        if (ax < obj1->hitbox.size_x / 2.0 + obj2->hitbox.size_x / 2.0 &&
-            obj1->x - obj1->hitbox.size_x / 2.0 > 0 &&
-            obj1->x + obj1->hitbox.size_x / 2.0 < field_x) {
+        /* z colide */
+        if (is_collided_z(*obj1) == 0) {
+            if (obj1->z + obj1->hitbox.size_z / 2.0 < obj2->z) {
+                obj1->z =
+                    obj1->z + az -
+                    (obj1->hitbox.size_z / 2.0 + obj2->hitbox.size_z / 2.0);
+                obj1->vz = 0;
+            } else if (obj1->z - obj1->hitbox.size_z / 2.0 > obj2->z) {
+                obj1->z =
+                    obj1->z - az +
+                    (obj1->hitbox.size_z / 2.0 + obj2->hitbox.size_z / 2.0);
+                obj1->vz = 0;
+            }
+        }
+        az = obj1->z - obj2->z;
+        if (az < 0) az = -az;
+        if (az < obj1->hitbox.size_z / 2.0 + obj2->hitbox.size_z / 2.0) {
+            /* x colide */
+            if (is_collided_x(*obj1) == 0) {
+                if (obj1->x + obj1->hitbox.size_x / 2.0 < obj2->x) {
+                    obj1->x =
+                        obj1->x + ax -
+                        (obj1->hitbox.size_x / 2.0 + obj2->hitbox.size_x / 2.0);
+                    obj1->vx = 0;
+                } else if (obj1->x - obj1->hitbox.size_x / 2.0 > obj2->x) {
+                    obj1->x =
+                        obj1->x - ax +
+                        (obj1->hitbox.size_x / 2.0 + obj2->hitbox.size_x / 2.0);
+                    obj1->vx = 0;
+                }
+            }
+        }
+        /* when objects are close to each other */
+        if (obj1->x + obj1->hitbox.size_x / 2.0 > obj2->x &&
+            obj1->x - obj1->hitbox.size_x / 2.0 < obj2->x &&
+            obj1->z + obj1->hitbox.size_z / 2.0 > obj2->z &&
+            obj1->z - obj1->hitbox.size_z / 2.0 < obj2->z) {
             if (obj1->x > obj2->x) {
                 obj1->x +=
-                    obj1->hitbox.size_x / 2.0 + obj2->hitbox.size_x / 2.0 - ax;
+                    (obj1->hitbox.size_x / 2.0 + obj2->hitbox.size_x / 2.0) -
+                    ax;
             } else {
                 obj1->x -=
-                    obj1->hitbox.size_x / 2.0 + obj2->hitbox.size_x / 2.0 - ax;
+                    (obj1->hitbox.size_x / 2.0 + obj2->hitbox.size_x / 2.0) -
+                    ax;
             }
-            obj1->vx = 0;
-        } else if (obj1->x - obj1->hitbox.size_x / 2.0 <= 0) {
-            obj1->x = obj1->hitbox.size_x / 2.0;
-            obj1->vx = 0;
-        } else if (obj1->x + obj1->hitbox.size_x / 2.0 >= field_x) {
-            obj1->x = field_x - obj1->hitbox.size_x / 2.0;
-            obj1->vx = 0;
-        }
-        /* z colide */
-        /* if not colide floor */
-        if (az < obj1->hitbox.size_z / 2.0 + obj2->hitbox.size_z / 2.0 &&
-            obj1->z - obj1->hitbox.size_z / 2.0 > 0 &&
-            obj1->z + obj1->hitbox.size_z / 2.0 < field_z) {
             if (obj1->z > obj2->z) {
                 obj1->z +=
-                    obj1->hitbox.size_z / 2.0 + obj2->hitbox.size_z / 2.0 - az;
+                    (obj1->hitbox.size_z / 2.0 + obj2->hitbox.size_z / 2.0) -
+                    az;
             } else {
                 obj1->z -=
-                    obj1->hitbox.size_z / 2.0 + obj2->hitbox.size_z / 2.0 - az;
+                    (obj1->hitbox.size_z / 2.0 + obj2->hitbox.size_z / 2.0) -
+                    az;
             }
-            obj1->vz = 0;
-        } else if (obj1->z - obj1->hitbox.size_z / 2.0 <= 0) {
-            obj1->z = obj1->hitbox.size_z / 2.0;
-            obj1->vz = 0;
-        } else if (obj1->z + obj1->hitbox.size_z / 2.0 >= field_z) {
-            obj1->z = field_z - obj1->hitbox.size_z / 2.0;
-            obj1->vz = 0;
         }
     }
 

@@ -48,7 +48,6 @@ void object_update(Object* main_obj, double d_sec);
 void collision(Object* obj1, Object* obj2);
 
 int is_collided_x(Object obj1);
-int is_collided_y(Object obj1);
 int is_collided_z(Object obj1);
 
 int check_if_object_above(Object obj1, Object obj2);
