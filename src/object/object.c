@@ -67,6 +67,10 @@ void object_set_size(Object* obj, int size_x, int size_z) {
     obj->hitbox.size_x = size_x;
     obj->hitbox.size_z = size_z;
 }
+void object_set_pos(Object* obj, double x, double z) {
+    obj->x = x;
+    obj->z = z;
+}
 
 void object_update(Object* main_obj, double d_sec) {
     ObjList* tmp_objs;

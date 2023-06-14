@@ -42,6 +42,7 @@ void free_obj_list(ObjList* list);
 void object_init(Object* obj, double x, double z, double vx, double vz,
                  int size_x, int size_z);
 void object_set_size(Object* obj, int size_x, int size_z);
+void object_set_pos(Object* obj, double x, double z);
 
 void object_update(Object* main_obj, double d_sec);
 
