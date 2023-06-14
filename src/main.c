@@ -11,6 +11,7 @@ int main(int argc, char **argv) {
     int break_flg = 0;
     double d_sec = 0, fps_timestamp = 0;
     Player pl, pl2;
+    Box box;
     SharedData *post_shared_data, *return_shared_data;
     SharedData shd_players[2];
     KeyFlag key_flag = {0}, p2_key_flag = {0};
@@ -25,13 +26,14 @@ int main(int argc, char **argv) {
     } else if (argment_flag.client == 1) {
         guest_socket_init(ip_addr);
     }
-    /* init player */
+    /* init objects */
     player_init(&pl, 0, 0, 0, 0, 100);
     player_init(&pl2, 0, 0, 0, 0, 100);
     player_list_add(&pl_list, &pl);
     player_list_add(&pl_list, &pl2);
     player_list_to_obj_list(pl_list, &obj_list);
     main_pl = &pl;
+    box_init(&box, field_x / 2, field_z / 2, 5 * 2 + 1, 5, 3);
     /* init shared data */
     error_check((post_shared_data =
                      mmap(NULL, sizeof(SharedData), PROT_READ | PROT_WRITE,
@@ -49,7 +51,10 @@ int main(int argc, char **argv) {
     pid_t pid = fork();
     if (pid < 0) {
         error("fork failed\n");
-    } else if (pid == 0) {       /* ~~~~~~~~~child process~~~~~~~~~ */
+    } else if (pid == 0) { /* ~~~~~~~~~child process~~~~~~~~~ */
+        set_box_pos(&box, field_x / 2, field_z / 2);
+        set_box_in_shared_data(&shd_players[0], box);
+        set_box_in_shared_data(&shd_players[1], box);
         while (break_flg == 0) { /* =====main loop===== */
             /* ======================termination check====================== */
             if (post_shared_data->break_flag == 1) {
@@ -108,10 +113,11 @@ int main(int argc, char **argv) {
             getch();
             get_key_flag(&key_flag);
             players_erase();
+            box_erase(box);
             new_player_positon(&pl, key_flag, d_sec);
             /* ======================Player2 input====================== */
             int frame_delta = 0;
-            if (take_shared_data(return_shared_data, &pl2, &frame_delta,
+            if (take_shared_data(return_shared_data, &pl2, &box, &frame_delta,
                                  &p2_key_flag) == 1) {
                 /* Predicting the motion of the current frame based on the
                  * information obtained from the received frame */
@@ -119,6 +125,7 @@ int main(int argc, char **argv) {
                 for (int i = frame_delta; i > 1; i--) {
                     new_player_positon(&pl2, p2_key_flag, 1.0 / max_fps);
                     player_update(&pl2, 1.0 / max_fps);
+                    box_update(&box, 1.0 / max_fps);
                 }
             } else {
                 new_player_positon(&pl2, p2_key_flag, d_sec);
@@ -128,10 +135,12 @@ int main(int argc, char **argv) {
                  tmp_pl_list = tmp_pl_list->next) {
                 player_update(tmp_pl_list->pl, 1.0 / max_fps);
             }
-            make_shared_data(post_shared_data, pl, frame, key_flag);
+            box_update(&box, 1.0 / max_fps);
+            make_shared_data(post_shared_data, pl, box, frame, key_flag);
             /* ======================fps control====================== */
             field_draw(&field_pos);
             players_draw();
+            box_draw(&box);
             refresh();
             get_end_time();
             d_sec = calc_time();
@@ -141,16 +150,19 @@ int main(int argc, char **argv) {
                 timeout_cnt += jump;
                 if (jump > 0) {
                     players_erase();
+                    box_erase(box);
                     for (int i = 0; i < jump; i++) {
                         for (PlayerList *tmp_pl_list = pl_list;
                              tmp_pl_list != NULL;
                              tmp_pl_list = tmp_pl_list->next) {
                             player_update(tmp_pl_list->pl, 1.0 / max_fps);
+                            box_update(&box, 1.0 / max_fps);
                         }
                     }
                     frame += jump;
                     field_draw(&field_pos);
                     players_draw();
+                    box_draw(&box);
                 }
             } else {
                 Sleep(sleep_time);
@@ -158,7 +170,8 @@ int main(int argc, char **argv) {
             /* ======================debug====================== */
             if (argment_flag.debug == 1) {
                 int fps = (int)(1.0 / (get_now_time() - fps_timestamp));
-                debug_draw(fps, fps_timestamp, d_sec, sleep_time, frame_delta);
+                debug_draw(fps, fps_timestamp, d_sec, sleep_time, frame_delta,
+                           box);
             }
         } /* =====end loop===== */
     }
