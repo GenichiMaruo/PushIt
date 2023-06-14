@@ -276,9 +276,52 @@ void players_draw() {
     }
 }
 
+void box_erase(Box box) {
+    int x, z;
+    attrset(COLOR_PAIR(2));
+    for (z = 0; z < box.obj.hitbox.old_size_z; z++) {
+        for (x = 0; x < box.obj.hitbox.old_size_x; x++) {
+            mvprintw(screen_height - box.obj.draw_old_z - z +
+                         box.obj.hitbox.old_size_z / 2,
+                     box.obj.draw_old_x + x - box.obj.hitbox.old_size_x / 2 + 1,
+                     " ");
+        }
+    }
+}
+
+void box_draw(Box *box) {
+    int x, z;
+    box->obj.draw_x = get_main_player_screen_x(*main_pl, screen_width, field_x,
+                                               max_offscreen_width) -
+                      get_player_x(*main_pl) + get_box_x(*box);
+    box->obj.draw_z = get_main_player_screen_z(*main_pl, screen_height, field_z,
+                                               max_offscreen_height) -
+                      get_player_z(*main_pl) + get_box_z(*box);
+    /* shadow */
+    attrset(COLOR_PAIR(2));
+    for (x = (int)(box->obj.z) / 5;
+         x < (box->obj.hitbox.size_x - (int)(box->obj.z) / 5); x++) {
+        mvprintw(screen_height - box->obj.draw_z + box->obj.z + 1,
+                 box->obj.draw_x + x - box->obj.hitbox.size_x / 2 + 1, " ");
+    }
+    /* box */
+    attrset(COLOR_PAIR(3));
+    for (z = 0; z < box->obj.hitbox.size_z; z++) {
+        for (x = 0; x < box->obj.hitbox.size_x; x++) {
+            mvprintw(screen_height - box->obj.draw_z - z +
+                         box->obj.hitbox.size_z / 2,
+                     box->obj.draw_x + x - box->obj.hitbox.size_x / 2 + 1, "x");
+        }
+    }
+    box->obj.draw_old_x = box->obj.draw_x;
+    box->obj.draw_old_z = box->obj.draw_z;
+    box->obj.hitbox.old_size_x = box->obj.hitbox.size_x;
+    box->obj.hitbox.old_size_z = box->obj.hitbox.size_z;
+}
+
 /* debug */
 void debug_draw(int fps, double fps_timestamp, double d_sec, double sleep_time,
-                int frame_delta) {
+                int frame_delta, Box box) {
     int i = 0;
     PlayerList *current;
     attrset(COLOR_PAIR(2));
@@ -298,4 +341,6 @@ void debug_draw(int fps, double fps_timestamp, double d_sec, double sleep_time,
              get_now_time() - fps_timestamp, d_sec, sleep_time);
     i++;
     mvprintw(3 + i, 3, "frame_delta:%d   ", frame_delta);
+    mvprintw(4 + i, 3, "box: x:%.4f, z:%.4f, vx:%.4f, vz:%.4f   ", box.obj.x,
+             box.obj.z, box.obj.vx, box.obj.vz);
 }

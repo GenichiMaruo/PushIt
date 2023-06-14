@@ -34,7 +34,10 @@ void field_draw(FieldPos *field_pos);
 void players_erase();
 void players_draw();
 
+void box_erase(Box box);
+void box_draw(Box *box);
+
 void debug_draw(int fps, double fps_timestamp, double d_sec, double sleep_time,
-                int frame_delta);
+                int frame_delta, Box box);
 
 #endif /* WINDOWMNG_H */
