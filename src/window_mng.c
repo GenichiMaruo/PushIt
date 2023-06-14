@@ -331,10 +331,12 @@ void debug_draw(int fps, double fps_timestamp, double d_sec, double sleep_time,
     mvprintw(2, 3, "field_x: %d, field_z: %d, max_fps: %d, fps: %d   ", field_x,
              field_z, max_fps, fps);
     for (current = pl_list; current != NULL; current = current->next) {
-        mvprintw(3 + i, 3,
-                 "pl_col: %d, x: %.4f, z: %.4f, vx: %.4f, vz: %.4f   ",
-                 current->pl->color, current->pl->obj.x, current->pl->obj.z,
-                 current->pl->obj.vx, current->pl->obj.vz);
+        mvprintw(
+            3 + i, 3,
+            "pl_col: %d, x: %.4f, z: %.4f, vx: %.4f, vz: %.4f, follow: %d   ",
+            get_player_color(*current->pl), current->pl->obj.x,
+            current->pl->obj.z, current->pl->obj.vx, current->pl->obj.vz,
+            current->pl->obj.followed_obj != NULL ? 1 : 0);
         i++;
     }
     mvprintw(3 + i, 3, "frame_time:%.4f, d_sec:%.4f, sleep_time:%.4f   ",
@@ -343,4 +345,5 @@ void debug_draw(int fps, double fps_timestamp, double d_sec, double sleep_time,
     mvprintw(3 + i, 3, "frame_delta:%d   ", frame_delta);
     mvprintw(4 + i, 3, "box: x:%.4f, z:%.4f, vx:%.4f, vz:%.4f   ", box.obj.x,
              box.obj.z, box.obj.vx, box.obj.vz);
+    mvprintw(5 + i, 3, "box followed:%d   ", is_box_followed(box));
 }

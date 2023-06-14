@@ -34,6 +34,7 @@ int main(int argc, char **argv) {
     player_list_to_obj_list(pl_list, &obj_list);
     main_pl = &pl;
     box_init(&box, field_x / 2, field_z / 2, 5 * 2 + 1, 5, 3);
+    obj_list_add(&obj_list, &box.obj);
     /* init shared data */
     error_check((post_shared_data =
                      mmap(NULL, sizeof(SharedData), PROT_READ | PROT_WRITE,
@@ -117,15 +118,19 @@ int main(int argc, char **argv) {
             new_player_positon(&pl, key_flag, d_sec);
             /* ======================Player2 input====================== */
             int frame_delta = 0;
-            if (take_shared_data(return_shared_data, &pl2, &box, &frame_delta,
-                                 &p2_key_flag) == 1) {
+            Box tmp_box;
+            if (take_shared_data(return_shared_data, &pl2, &tmp_box,
+                                 &frame_delta, &p2_key_flag) == 1) {
                 /* Predicting the motion of the current frame based on the
                  * information obtained from the received frame */
                 frame_delta = frame - frame_delta;
                 for (int i = frame_delta; i > 1; i--) {
                     new_player_positon(&pl2, p2_key_flag, 1.0 / max_fps);
                     player_update(&pl2, 1.0 / max_fps);
-                    box_update(&box, 1.0 / max_fps);
+                    box_update(&tmp_box, 1.0 / max_fps);
+                }
+                if (is_box_followed(tmp_box) == 1) {
+                    box = tmp_box;
                 }
             } else {
                 new_player_positon(&pl2, p2_key_flag, d_sec);

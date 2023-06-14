@@ -151,8 +151,6 @@ void player_init(Player* pl, double x, double z, double vx, double vz, int hp) {
 void player_squat(Player* pl, int level) {
     if (pl->jump_level != level) {
         pl->obj.z -= pl->obj.hitbox.size_z / 2.0;
-        move_referencing_obj(&pl->obj, 0, -pl->obj.hitbox.size_z / 2.0 + 0.2, 0,
-                             0);
         if (level == 1) {
             object_set_size(&pl->obj, 5, 4);
         } else if (level == 2) {
@@ -161,8 +159,6 @@ void player_squat(Player* pl, int level) {
             object_set_size(&pl->obj, 5, 5);
         }
         pl->obj.z += pl->obj.hitbox.size_z / 2.0;
-        move_referencing_obj(&pl->obj, 0, pl->obj.hitbox.size_z / 2.0 + 0.2, 0,
-                             2);
     }
     pl->jump_level = level;
 }
@@ -178,7 +174,6 @@ void player_jump(Player* pl, double power) {
     if (is_collided_z(pl->obj) == 1 || pl->obj.collision_above_flag == 1) {
         pl->jump_cnt = 0;
         pl->obj.vz = power;
-        move_referencing_obj(&pl->obj, 0, 0, 0, power);
     } else if (is_collided_z(pl->obj) != 1 && (is_collided_x(pl->obj) != 0) &&
                pl->jump_cnt < 1) {
         pl->obj.vz = 55;
