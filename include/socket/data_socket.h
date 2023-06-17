@@ -12,6 +12,7 @@ typedef struct SharedData {
     Box box;
     int box_followed_obj_id;
     KeyFlag key;
+    int winner;
     short int break_flag;
     short int lock_flag;
 } SharedData;
@@ -20,10 +21,10 @@ void shared_data_init(SharedData *sd);
 void shared_data_copy(SharedData *sd, SharedData *sd2);
 
 void make_shared_data(SharedData *sd, Player pl, Box box, int frame,
-                      KeyFlag key);
+                      KeyFlag key, int winner, int break_flag);
 /* return 1 if data is taken */
 int take_shared_data(SharedData *sd, Player *pl, Box *box, int *frame,
-                     KeyFlag *key);
+                     KeyFlag *key, int *winner, int *break_flag);
 
 void set_box_in_shared_data(SharedData *sd, Box box);
 
