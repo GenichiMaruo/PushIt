@@ -8,7 +8,7 @@ ObjList *obj_list = NULL;
 ArgmentFlag argment_flag = {0};
 
 int main(int argc, char **argv) {
-    int break_flg = 0;
+    int break_flg = 0, result = 0;
     double d_sec = 0, fps_timestamp = 0;
     Player pl, pl2;
     Box box;
@@ -64,6 +64,10 @@ int main(int argc, char **argv) {
             /* ======================data exchange====================== */
             shared_data_copy(&shd_players[0], post_shared_data);
             shared_data_copy(return_shared_data, &shd_players[1]);
+            if (shd_players[1].break_flag == 1) {
+                break_flg = 1;
+                continue;
+            }
             if (argment_flag.server == 1) {
                 host_socket_send(&shd_players[0]);
                 host_socket_recv(&shd_players[1]);
@@ -79,7 +83,6 @@ int main(int argc, char **argv) {
         } else if (argment_flag.client == 1) {
             guest_socket_close();
         }
-        fprintf(stderr, "child process end\n");
         return 0;
     } else { /* ~~~~~~~~~parent process~~~~~~~~~ */
         /* close socket */
@@ -106,6 +109,11 @@ int main(int argc, char **argv) {
                 break_flg = 1;
                 post_shared_data->break_flag = 1;
             }
+            /* end after box is out of field */
+            if ((result = is_game_end_box(box, field_x, main_pl->color)) != 0) {
+                break_flg = 1;
+                post_shared_data->break_flag = 1;
+            }
             /* ======================debug====================== */
             if (argment_flag.debug == 1) {
                 fps_timestamp = get_now_time();
@@ -117,10 +125,11 @@ int main(int argc, char **argv) {
             box_erase(box);
             new_player_positon(&pl, key_flag, d_sec);
             /* ======================Player2 input====================== */
-            int frame_delta = 0;
+            int frame_delta = 0, tmp_result = 0, tmp_break_flg = 0;
             Box tmp_box;
             if (take_shared_data(return_shared_data, &pl2, &tmp_box,
-                                 &frame_delta, &p2_key_flag) == 1) {
+                                 &frame_delta, &p2_key_flag, &tmp_result,
+                                 &tmp_break_flg) == 1) {
                 /* Predicting the motion of the current frame based on the
                  * information obtained from the received frame */
                 frame_delta = frame - frame_delta;
@@ -136,13 +145,20 @@ int main(int argc, char **argv) {
             } else {
                 new_player_positon(&pl2, p2_key_flag, d_sec);
             }
+            if (tmp_result != 0 && result == 0) {
+                result = tmp_result;
+            }
+            if (tmp_break_flg == 1 && break_flg == 0) {
+                break_flg = break_flg;
+            }
             /* ======================update====================== */
             for (PlayerList *tmp_pl_list = pl_list; tmp_pl_list != NULL;
                  tmp_pl_list = tmp_pl_list->next) {
                 player_update(tmp_pl_list->pl, 1.0 / max_fps);
             }
             box_update(&box, 1.0 / max_fps);
-            make_shared_data(post_shared_data, pl, box, frame, key_flag);
+            make_shared_data(post_shared_data, pl, box, frame, key_flag, result,
+                             break_flg);
             /* ======================fps control====================== */
             field_draw(&field_pos);
             players_draw();
@@ -180,10 +196,12 @@ int main(int argc, char **argv) {
                            box);
             }
         } /* =====end loop===== */
+        /* ======================result====================== */
+        show_result(result);
+        Sleep(3000);
     }
     getch();
     endwin();
     wait(NULL);
-    fprintf(stderr, "parent process end\n");
     return EXIT_SUCCESS;
 }
