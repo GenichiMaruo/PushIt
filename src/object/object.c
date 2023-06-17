@@ -87,7 +87,7 @@ void object_update(Object* main_obj, double d_sec) {
                     (main_obj->vx + main_obj->followed_obj->old_vx) * d_sec;
             } else {
                 main_obj->x += main_obj->vx * d_sec;
-            } 
+            }
         } else {
             main_obj->z +=
                 (main_obj->vz + main_obj->followed_obj->old_vz) * d_sec;
@@ -168,12 +168,10 @@ void collision(Object* obj1, Object* obj2) {
                     obj1->x =
                         obj1->x + ax -
                         (obj1->hitbox.size_x / 2.0 + obj2->hitbox.size_x / 2.0);
-                    obj1->vx = 0;
                 } else if (obj1->x - obj1->hitbox.size_x / 2.0 > obj2->x) {
                     obj1->x =
                         obj1->x - ax +
                         (obj1->hitbox.size_x / 2.0 + obj2->hitbox.size_x / 2.0);
-                    obj1->vx = 0;
                 }
             }
         }
