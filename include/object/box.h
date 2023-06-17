@@ -9,7 +9,8 @@ typedef struct Box {
     int color;
 } Box;
 
-void box_init(Box* box, double x, double y, int size_x, int size_y, int color);
+void box_init(Box* box, int id, double x, double y, int size_x, int size_y,
+              int color);
 void set_box_pos(Box* box, double x, double y);
 
 double get_box_x(Box box);

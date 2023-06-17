@@ -33,8 +33,9 @@ void free_obj_list(ObjList* list) {
     }
 }
 
-void object_init(Object* obj, double x, double z, double vx, double vz,
+void object_init(Object* obj, int id, double x, double z, double vx, double vz,
                  int size_x, int size_z) {
+    obj->id = id;
     obj->x = x;
     obj->z = z;
     obj->vx = vx;
@@ -43,11 +44,17 @@ void object_init(Object* obj, double x, double z, double vx, double vz,
     obj->old_z = (int)z;
     obj->old_vx = vx;
     obj->old_vz = vz;
+    obj->draw_x = (int)x;
+    obj->draw_z = (int)z;
+    obj->draw_old_x = (int)x;
+    obj->draw_old_z = (int)z;
     obj->collision_above_flag = 0;
     obj->collision_side_flag = 0;
     obj->collision_enable = 1;
     obj->hitbox.size_x = size_x;
     obj->hitbox.size_z = size_z;
+    obj->hitbox.old_size_x = size_x;
+    obj->hitbox.old_size_z = size_z;
     obj->followed_obj = NULL;
 }
 
@@ -71,16 +78,16 @@ void object_update(Object* main_obj, double d_sec) {
         if (main_obj->collision_above_flag == 0) {
             main_obj->z += main_obj->vz * d_sec;
             if (main_obj->collision_side_flag == 1 &&
-                main_obj->followed_obj->old_vx > 0) {
+                main_obj->followed_obj->vx > 0) {
                 main_obj->x +=
                     (main_obj->vx + main_obj->followed_obj->old_vx) * d_sec;
             } else if (main_obj->collision_side_flag == -1 &&
-                       main_obj->vx < 0) {
+                       main_obj->followed_obj->vx < 0) {
                 main_obj->x +=
                     (main_obj->vx + main_obj->followed_obj->old_vx) * d_sec;
             } else {
                 main_obj->x += main_obj->vx * d_sec;
-            }
+            } 
         } else {
             main_obj->z +=
                 (main_obj->vz + main_obj->followed_obj->old_vz) * d_sec;
@@ -104,6 +111,7 @@ void object_update(Object* main_obj, double d_sec) {
     if (main_obj->vz < 0.1 && main_obj->vz > -0.1) main_obj->vz = 0;
     main_obj->collision_above_flag = 0;
     main_obj->collision_side_flag = 0;
+    main_obj->followed_obj = NULL;
     for (tmp_objs = obj_list; tmp_objs != NULL; tmp_objs = tmp_objs->next) {
         if (tmp_objs->obj != main_obj && tmp_objs->obj->collision_enable == 1) {
             collision(main_obj, tmp_objs->obj);
@@ -116,10 +124,8 @@ void collision(Object* obj1, Object* obj2) {
     /* wall colide */
     if (obj1->x - obj1->hitbox.size_x / 2.0 < 0) {
         obj1->x = obj1->hitbox.size_x / 2.0;
-        obj1->vx = 0;
     } else if (obj1->x + obj1->hitbox.size_x / 2.0 > field_x) {
         obj1->x = field_x - obj1->hitbox.size_x / 2.0;
-        obj1->vx = 0;
     }
     /* floor colide */
     if (obj1->z - obj1->hitbox.size_z / 2.0 < 0) {
@@ -130,13 +136,7 @@ void collision(Object* obj1, Object* obj2) {
         obj1->vz = 0;
     }
     /* object colide */
-    if (obj2 == NULL) return;
-    if (obj1->collision_above_flag == 0) {
-        obj1->collision_above_flag = check_if_object_above(*obj1, *obj2);
-    }
-    if (obj1->collision_side_flag == 0) {
-        obj1->collision_side_flag = check_if_object_side(*obj1, *obj2);
-    }
+    if (obj2 == NULL || (obj2 != NULL && obj1->id == obj2->id)) return;
 
     ax = obj1->x - obj2->x;
     az = obj1->z - obj2->z;
@@ -209,11 +209,10 @@ void collision(Object* obj1, Object* obj2) {
             obj1->followed_obj = obj2;
         }
     } else if (check_if_object_side(*obj1, *obj2) != 0) {
+        obj1->collision_side_flag = check_if_object_side(*obj1, *obj2);
         if (obj1->followed_obj == NULL) {
             obj1->followed_obj = obj2;
         }
-    } else if (obj1->followed_obj == obj2) {
-        obj1->followed_obj = NULL;
     }
 }
 

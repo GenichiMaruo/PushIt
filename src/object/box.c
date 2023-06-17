@@ -1,8 +1,9 @@
 #include "../../include/object/box.h"
 
 /* initialize box */
-void box_init(Box* box, double x, double z, int size_x, int size_z, int color) {
-    object_init(&box->obj, x, z, 0, 0, size_x, size_z);
+void box_init(Box* box, int id, double x, double z, int size_x, int size_z,
+              int color) {
+    object_init(&box->obj, id, x, z, 0, 0, size_x, size_z);
     box->color = color;
 }
 
