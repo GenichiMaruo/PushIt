@@ -79,12 +79,12 @@ void object_update(Object* main_obj, double d_sec) {
             main_obj->z += main_obj->vz * d_sec;
             if (main_obj->collision_side_flag == 1 &&
                 main_obj->followed_obj->vx > 0) {
-                main_obj->x +=
-                    (main_obj->vx + main_obj->followed_obj->old_vx) * d_sec;
+                main_obj->x += (main_obj->vx + main_obj->followed_obj->old_vx) *
+                               0.5 * d_sec;
             } else if (main_obj->collision_side_flag == -1 &&
                        main_obj->followed_obj->vx < 0) {
-                main_obj->x +=
-                    (main_obj->vx + main_obj->followed_obj->old_vx) * d_sec;
+                main_obj->x += (main_obj->vx + main_obj->followed_obj->old_vx) *
+                               0.5 * d_sec;
             } else {
                 main_obj->x += main_obj->vx * d_sec;
             }
@@ -270,4 +270,16 @@ int check_if_object_side(Object obj1, Object obj2) {
         }
     }
     return 0;
+}
+
+Object* get_obj_by_id(int id) {
+    if (id == -1) {
+        return NULL;
+    }
+    for (ObjList* tmp = obj_list; tmp != NULL; tmp = tmp->next) {
+        if (tmp->obj->id == id) {
+            return tmp->obj;
+        }
+    }
+    return NULL;
 }

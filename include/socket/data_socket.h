@@ -8,7 +8,9 @@ typedef struct SharedData {
     int frame;
     int player_id;
     Player pl;
+    int pl_followed_obj_id;
     Box box;
+    int box_followed_obj_id;
     KeyFlag key;
     short int break_flag;
     short int lock_flag;

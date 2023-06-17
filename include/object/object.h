@@ -53,4 +53,6 @@ int is_collided_z(Object obj1);
 int check_if_object_above(Object obj1, Object obj2);
 int check_if_object_side(Object obj1, Object obj2);
 
+Object* get_obj_by_id(int id);
+
 #endif /* OBJECT_H */
