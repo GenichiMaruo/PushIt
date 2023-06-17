@@ -20,10 +20,12 @@ $(EXEC): $(OBJS)
 
 $(BUILDDIR)/%.o: $(SRCDIR)/%.c
 	@mkdir -p $(OBJSUBDIRS)
-	@echo "Compiling $<..."
+	@echo -n "Compiling $<... "
 	@$(CC) $(CFLAGS) -I$(INCDIR) -c $< -o $@
+	@echo "Done."
 
 force: clean all
 
 clean:
 	@rm -f $(OBJS) $(EXEC)
+	@echo "Cleaned."

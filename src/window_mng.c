@@ -11,6 +11,28 @@ extern int max_fps, frame, timeout_cnt;
 
 char *aa[121] = {0};
 
+void init_ncurses() {
+    /* init ncurses */
+    initscr();
+    curs_set(0);
+    noecho();
+    timeout(0);
+    /* init color */
+    start_color();
+    init_pair(1, COLOR_BLACK, COLOR_WHITE);
+    init_pair(2, COLOR_WHITE, COLOR_BLACK);
+    init_pair(3, COLOR_WHITE, COLOR_GREEN);
+    init_pair(11, COLOR_BLACK, COLOR_YELLOW);
+    init_pair(12, COLOR_BLACK, COLOR_GREEN);
+    init_pair(13, COLOR_BLACK, COLOR_BLUE);
+    init_pair(14, COLOR_BLACK, COLOR_CYAN);
+
+    init_pair(21, COLOR_BLACK, COLOR_YELLOW);
+    init_pair(22, COLOR_BLACK, COLOR_GREEN);
+    init_pair(23, COLOR_BLACK, COLOR_RED);
+    init_pair(24, COLOR_BLACK, COLOR_MAGENTA);
+}
+
 void import_from_txt() {
     FILE *fp;
     char *fname = "aa.txt";
@@ -54,6 +76,13 @@ double calc_time() {
     nsec = end_time.tv_nsec - start_time.tv_nsec;
     d_sec = sec + (double)nsec / 1000000000;
     return d_sec;
+}
+
+void get_screen_size() {
+    int tmp_screen_width, tmp_screen_height;
+    getmaxyx(stdscr, tmp_screen_height, tmp_screen_width);
+    screen_width = tmp_screen_width - 2;
+    screen_height = tmp_screen_height - 2;
 }
 
 /* get main player screen position x */
@@ -247,9 +276,52 @@ void players_draw() {
     }
 }
 
+void box_erase(Box box) {
+    int x, z;
+    attrset(COLOR_PAIR(2));
+    for (z = 0; z < box.obj.hitbox.old_size_z; z++) {
+        for (x = 0; x < box.obj.hitbox.old_size_x; x++) {
+            mvprintw(screen_height - box.obj.draw_old_z - z +
+                         box.obj.hitbox.old_size_z / 2,
+                     box.obj.draw_old_x + x - box.obj.hitbox.old_size_x / 2 + 1,
+                     " ");
+        }
+    }
+}
+
+void box_draw(Box *box) {
+    int x, z;
+    box->obj.draw_x = get_main_player_screen_x(*main_pl, screen_width, field_x,
+                                               max_offscreen_width) -
+                      get_player_x(*main_pl) + get_box_x(*box);
+    box->obj.draw_z = get_main_player_screen_z(*main_pl, screen_height, field_z,
+                                               max_offscreen_height) -
+                      get_player_z(*main_pl) + get_box_z(*box);
+    /* shadow */
+    attrset(COLOR_PAIR(2));
+    for (x = (int)(box->obj.z) / 5;
+         x < (box->obj.hitbox.size_x - (int)(box->obj.z) / 5); x++) {
+        mvprintw(screen_height - box->obj.draw_z + box->obj.z + 1,
+                 box->obj.draw_x + x - box->obj.hitbox.size_x / 2 + 1, " ");
+    }
+    /* box */
+    attrset(COLOR_PAIR(3));
+    for (z = 0; z < box->obj.hitbox.size_z; z++) {
+        for (x = 0; x < box->obj.hitbox.size_x; x++) {
+            mvprintw(screen_height - box->obj.draw_z - z +
+                         box->obj.hitbox.size_z / 2,
+                     box->obj.draw_x + x - box->obj.hitbox.size_x / 2 + 1, "x");
+        }
+    }
+    box->obj.draw_old_x = box->obj.draw_x;
+    box->obj.draw_old_z = box->obj.draw_z;
+    box->obj.hitbox.old_size_x = box->obj.hitbox.size_x;
+    box->obj.hitbox.old_size_z = box->obj.hitbox.size_z;
+}
+
 /* debug */
 void debug_draw(int fps, double fps_timestamp, double d_sec, double sleep_time,
-                int frame_delta) {
+                int frame_delta, Box box) {
     int i = 0;
     PlayerList *current;
     attrset(COLOR_PAIR(2));
@@ -259,13 +331,22 @@ void debug_draw(int fps, double fps_timestamp, double d_sec, double sleep_time,
     mvprintw(2, 3, "field_x: %d, field_z: %d, max_fps: %d, fps: %d   ", field_x,
              field_z, max_fps, fps);
     for (current = pl_list; current != NULL; current = current->next) {
-        mvprintw(3 + i, 3, "pl_col: %d, x: %f, z: %f, vx: %f, vz: %f",
-                 current->pl->color, current->pl->obj.x, current->pl->obj.z,
-                 current->pl->obj.vx, current->pl->obj.vz);
+        mvprintw(
+            3 + i, 3,
+            "pl_col: %d, x: %.4f, z: %.4f, vx: %.4f, vz: %.4f, follow: %d   ",
+            get_player_color(*current->pl), current->pl->obj.x,
+            current->pl->obj.z, current->pl->obj.vx, current->pl->obj.vz,
+            current->pl->obj.followed_obj != NULL ? 1 : 0);
         i++;
     }
-    mvprintw(3 + i, 3, "frame_time:%f, d_sec:%f, sleep_time:%f   ",
+    mvprintw(3 + i, 3, "frame_time:%.4f, d_sec:%.4f, sleep_time:%.4f   ",
              get_now_time() - fps_timestamp, d_sec, sleep_time);
     i++;
     mvprintw(3 + i, 3, "frame_delta:%d   ", frame_delta);
+    mvprintw(4 + i, 3, "box: x:%.4f, z:%.4f, vx:%.4f, vz:%.4f   ", box.obj.x,
+             box.obj.z, box.obj.vx, box.obj.vz);
+    mvprintw(5 + i, 3, "box followed:%d, follow_obj_id:%d, flag:%d   ",
+             box.obj.followed_obj != NULL ? 1 : 0,
+             box.obj.followed_obj != NULL ? box.obj.followed_obj->id : -1,
+             box.obj.collision_side_flag);
 }

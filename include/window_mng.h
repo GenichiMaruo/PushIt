@@ -8,10 +8,14 @@
 #include "./object/_object_group.h"
 #include "argment.h"
 
+void init_ncurses();
+
 void get_start_time();
 void get_end_time();
 double calc_time();
 double get_now_time();
+
+void get_screen_size();
 
 int get_main_player_screen_x(Player pl, int screen_width, int field_width,
                              int max_offscreen_width);
@@ -30,7 +34,10 @@ void field_draw(FieldPos *field_pos);
 void players_erase();
 void players_draw();
 
+void box_erase(Box box);
+void box_draw(Box *box);
+
 void debug_draw(int fps, double fps_timestamp, double d_sec, double sleep_time,
-                int frame_delta);
+                int frame_delta, Box box);
 
 #endif /* WINDOWMNG_H */

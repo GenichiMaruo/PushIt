@@ -58,7 +58,8 @@ int get_player_z(Player pl);
 int get_player_pixel(Player pl, int px, int py);
 char get_player_aa(Player pl, int px, int py);
 
-void player_init(Player *pl, double x, double z, double vx, double vz, int hp);
+void player_init(Player *pl, int id, double x, double z, double vx, double vz,
+                 int hp);
 void player_squat(Player *pl, int level);
 void player_left(Player *pl, double speed);
 void player_right(Player *pl, double speed);
