@@ -27,13 +27,13 @@ int main(int argc, char **argv) {
         guest_socket_init(ip_addr);
     }
     /* init objects */
-    player_init(&pl, 0, 0, 0, 0, 100);
-    player_init(&pl2, 0, 0, 0, 0, 100);
+    player_init(&pl, 0, 0, 0, 0, 0, 100);
+    player_init(&pl2, 0, 0, 0, 0, 0, 100);
     player_list_add(&pl_list, &pl);
     player_list_add(&pl_list, &pl2);
     player_list_to_obj_list(pl_list, &obj_list);
     main_pl = &pl;
-    box_init(&box, field_x / 2, field_z / 2, 5 * 2 + 1, 5, 3);
+    box_init(&box, 3, field_x / 2, field_z / 2, 5 * 2 + 1, 5, 3);
     obj_list_add(&obj_list, &box.obj);
     /* init shared data */
     error_check((post_shared_data =
@@ -129,7 +129,8 @@ int main(int argc, char **argv) {
                     player_update(&pl2, 1.0 / max_fps);
                     box_update(&tmp_box, 1.0 / max_fps);
                 }
-                if (is_box_followed(tmp_box) == 1) {
+                if (is_box_followed(tmp_box) == 1 &&
+                    tmp_box.obj.followed_obj->id != main_pl->obj.id) {
                     box = tmp_box;
                 }
             } else {

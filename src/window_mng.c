@@ -345,5 +345,8 @@ void debug_draw(int fps, double fps_timestamp, double d_sec, double sleep_time,
     mvprintw(3 + i, 3, "frame_delta:%d   ", frame_delta);
     mvprintw(4 + i, 3, "box: x:%.4f, z:%.4f, vx:%.4f, vz:%.4f   ", box.obj.x,
              box.obj.z, box.obj.vx, box.obj.vz);
-    mvprintw(5 + i, 3, "box followed:%d   ", is_box_followed(box));
+    mvprintw(5 + i, 3, "box followed:%d, follow_obj_id:%d, flag:%d   ",
+             box.obj.followed_obj != NULL ? 1 : 0,
+             box.obj.followed_obj != NULL ? box.obj.followed_obj->id : -1,
+             box.obj.collision_side_flag);
 }

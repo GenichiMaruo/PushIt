@@ -49,7 +49,10 @@ void player_list_to_obj_list(PlayerList* pl_list, ObjList** obj_list) {
     }
 }
 
-void set_player_color(Player* pl, int color) { pl->color = color; }
+void set_player_color(Player* pl, int color) {
+    pl->color = color;
+    pl->obj.id = color;
+}
 void set_player_x(Player* pl, double x) {
     pl->obj.x = x;
     pl->obj.old_x = x;
@@ -136,8 +139,9 @@ char get_player_aa(Player pl, int px, int pz) {
     }
 }
 
-void player_init(Player* pl, double x, double z, double vx, double vz, int hp) {
-    object_init(&pl->obj, x, z, vx, vz, 5, 5);
+void player_init(Player* pl, int id, double x, double z, double vx, double vz,
+                 int hp) {
+    object_init(&pl->obj, id, x, z, vx, vz, 5, 5);
     pl->hp = hp;
     pl->act = 0;
     pl->act_cnt = 0;
