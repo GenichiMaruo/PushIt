@@ -6,6 +6,8 @@
 #include "./object/_object_group.h"
 #include "./socket/_socket_group.h"
 #include "argment.h"
+#include "game.h"
+#include "manu.h"
 #include "window_mng.h"
 
 extern int port;
