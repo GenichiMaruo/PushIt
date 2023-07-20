@@ -1,5 +1,8 @@
 #include "../../include/object/player.h"
 
+extern int frame;
+extern int max_fps;
+
 int dot_art_n[5][5] = {{1, 1, 1, 1, 0},
                        {1, 1, 1, 1, 0},
                        {3, 3, 3, 3, 1},
@@ -52,6 +55,7 @@ void player_list_to_obj_list(PlayerList* pl_list, ObjList** obj_list) {
 void set_player_color(Player* pl, int color) {
     pl->color = color;
     pl->obj.id = color;
+    pl->balloon.color = color;
 }
 void set_player_x(Player* pl, double x) {
     pl->obj.x = x;
@@ -104,6 +108,11 @@ void get_key_flag(KeyFlag* key) {
     } else {
         key->end = 0;
     }
+    if (GetKeyState('E') & 0x8000) {
+        key->balloon = 1;
+    } else {
+        key->balloon = 0;
+    }
 }
 int get_player_color(Player pl) { return pl.color; }
 int get_player_x(Player pl) { return (int)pl.obj.x; }
@@ -151,6 +160,7 @@ void player_init(Player* pl, int id, double x, double z, double vx, double vz,
     pl->jump_cnt = 0;
     pl->jump_key_flg = 0;
     pl->color = 0;
+    balloon_init(&pl->balloon, x, z + 5, id);
 }
 void player_squat(Player* pl, int level) {
     if (pl->jump_level != level) {
@@ -196,6 +206,13 @@ void player_jump(Player* pl, double power) {
 }
 void player_update(Player* pl, double d_sec) {
     object_update(&pl->obj, d_sec);
+    if (pl->balloon_start_frame >= 0) {
+        if (frame - pl->balloon_start_frame > 5 * max_fps) {
+            pl->balloon_start_frame = -1;
+        }
+    }
+    pl->balloon.obj.x = pl->obj.x;
+    pl->balloon.obj.z = pl->obj.z + 5;
     if (is_collided_z(pl->obj) == 1) {
         pl->obj.vx *= 0.8;
     }

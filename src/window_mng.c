@@ -222,6 +222,10 @@ void players_erase() {
                     " ");
             }
         }
+        /* balloon clear */
+        if (pl->balloon_start_frame >= 0) {
+            balloon_erase(pl->balloon);
+        }
     }
 }
 
@@ -259,6 +263,10 @@ void players_draw() {
                          pl->obj.draw_x + x - pl->obj.hitbox.size_x / 2 + 1,
                          "%c", get_player_aa(*pl, x, z));
             }
+        }
+        /* balloon */
+        if (pl->balloon_start_frame >= 0) {
+            balloon_draw(pl->balloon);
         }
         pl->obj.draw_old_x = pl->obj.draw_x;
         pl->obj.draw_old_z = pl->obj.draw_z;
@@ -319,6 +327,59 @@ void box_draw(Box *box) {
     box->obj.draw_old_z = box->obj.draw_z;
     box->obj.hitbox.old_size_x = box->obj.hitbox.size_x;
     box->obj.hitbox.old_size_z = box->obj.hitbox.size_z;
+}
+
+void balloon_erase(Balloon balloon) {
+    int x, z;
+    attrset(COLOR_PAIR(2));
+    for (z = 0; z < balloon.obj.hitbox.old_size_z; z++) {
+        for (x = 0; x < balloon.obj.hitbox.old_size_x; x++) {
+            if (get_balloon_pixel(x, z) == 0 && get_balloon_aa(x, z) == ' ')
+                continue;
+            mvprintw(screen_height - balloon.obj.draw_old_z - z +
+                         balloon.obj.hitbox.old_size_z / 2,
+                     balloon.obj.draw_old_x + x -
+                         balloon.obj.hitbox.old_size_x / 2 + 1,
+                     " ");
+        }
+    }
+}
+
+void balloon_draw(Balloon balloon) {
+    int x, z, color;
+    balloon.obj.draw_x =
+        get_main_player_screen_x(*main_pl, screen_width, field_x,
+                                 max_offscreen_width) -
+        get_player_x(*main_pl) + get_balloon_x(balloon);
+    balloon.obj.draw_z =
+        get_main_player_screen_z(*main_pl, screen_height, field_z,
+                                 max_offscreen_height) -
+        get_player_z(*main_pl) + get_balloon_z(balloon);
+    /* shadow */
+    attrset(COLOR_PAIR(2));
+    for (x = (int)(balloon.obj.z) / 5;
+         x < (balloon.obj.hitbox.size_x - (int)(balloon.obj.z) / 5); x++) {
+        mvprintw(screen_height - balloon.obj.draw_z + balloon.obj.z + 1,
+                 balloon.obj.draw_x + x - balloon.obj.hitbox.size_x / 2 + 1,
+                 " ");
+    }
+    /* balloon */
+    attrset(COLOR_PAIR(4));
+    for (z = 0; z < balloon.obj.hitbox.size_z; z++) {
+        for (x = 0; x < balloon.obj.hitbox.size_x; x++) {
+            color = get_balloon_pixel(x, z);
+            if (color == 0 && get_balloon_aa(x, z) == ' ') continue;
+            attrset(COLOR_PAIR(color + 10 * get_balloon_color(balloon)));
+            mvprintw(screen_height - balloon.obj.draw_z - z +
+                         balloon.obj.hitbox.size_z / 2,
+                     balloon.obj.draw_x + x - balloon.obj.hitbox.size_x / 2 + 1,
+                     "%c", get_balloon_aa(x, z));
+        }
+    }
+    balloon.obj.draw_old_x = balloon.obj.draw_x;
+    balloon.obj.draw_old_z = balloon.obj.draw_z;
+    balloon.obj.hitbox.old_size_x = balloon.obj.hitbox.size_x;
+    balloon.obj.hitbox.old_size_z = balloon.obj.hitbox.size_z;
 }
 
 /* debug */

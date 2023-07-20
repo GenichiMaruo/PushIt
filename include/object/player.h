@@ -3,6 +3,7 @@
 #define PLAYER_H
 
 #include "../common/external_libs.h"
+#include "balloon.h"
 #include "object.h"
 typedef struct Player {
     Object obj;
@@ -15,6 +16,8 @@ typedef struct Player {
     double jump_timestamp;
     int jump_cnt;
     short int jump_key_flg;
+    int balloon_start_frame;
+    Balloon balloon;
     int color;
 } Player;
 
@@ -32,6 +35,7 @@ typedef struct KeyFlag {
     short int squat;
     short int sprint;
     short int end;
+    short int balloon;
 } KeyFlag;
 
 typedef struct FieldPos {

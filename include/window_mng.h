@@ -37,6 +37,9 @@ void players_draw();
 void box_erase(Box box);
 void box_draw(Box *box);
 
+void balloon_erase(Balloon balloon);
+void balloon_draw(Balloon balloon);
+
 void debug_draw(int fps, double fps_timestamp, double d_sec, double sleep_time,
                 int frame_delta, Box box);
 

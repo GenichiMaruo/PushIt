@@ -129,6 +129,11 @@ int pushit_game_main() {
             } else {
                 new_player_positon(&pl2, p2_key_flag, d_sec);
             }
+            if (p2_key_flag.balloon == 1 &&
+                pl2.obj.followed_obj->id == pl.obj.id &&
+                pl.balloon_start_frame < 0) {
+                pl.balloon_start_frame = frame;
+            }
             if (tmp_result != 0 && result == 0) {
                 result = tmp_result;
             }
