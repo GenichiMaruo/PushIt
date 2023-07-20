@@ -16,37 +16,52 @@ int main(int argc, char **argv) {
     init_ncurses();
     /* ======================menu====================== */
     while (1) {
-        int selected_option = menu_main();
-        switch (selected_option) {
-            case 1:
-                argment_flag.server = 1;
+        while (1) {
+            int selected_option = menu_main();
+            switch (selected_option) {
+                case 1:
+                    argment_flag.server = 1;
+                    break;
+                case 2: {
+                    int selected_input_ip = menu_input_ip();
+                    if (selected_input_ip == 1) {
+                        argment_flag.client = 1;
+                    }
+                } break;
+                case 3:
+                    endwin();
+                    wait(NULL);
+                    return EXIT_SUCCESS;
+                    break;
+                default:
+                    break;
+            }
+            if (argment_flag.server == 1 || argment_flag.client == 1) {
                 break;
-            case 2: {
-                int selected_input_ip = menu_input_ip();
-                if (selected_input_ip == 1) {
-                    argment_flag.client = 1;
-                }
-            } break;
-            default:
-                printf("無効な選択です。\n");
-                break;
+            }
         }
-        if (argment_flag.server == 1 || argment_flag.client == 1) {
-            break;
+
+        /* init socket */
+        if (argment_flag.server == 1) {
+            host_socket_init();
+        } else if (argment_flag.client == 1) {
+            guest_socket_init(ip_addr);
         }
+        if (error_flag == 1) {
+            error_flag = 0;
+            continue;
+        }
+        result = pushit_game_main();
+        /* ======================close====================== */
+        if (argment_flag.server == 1) {
+            host_socket_close();
+        } else if (argment_flag.client == 1) {
+            guest_socket_close();
+        }
+        /* ======================result====================== */
+        show_result(result);
+        Sleep(3000);
     }
-
-    /* init socket */
-    if (argment_flag.server == 1) {
-        host_socket_init();
-    } else if (argment_flag.client == 1) {
-        guest_socket_init(ip_addr);
-    }
-    result = pushit_game_main();
-
-    /* ======================result====================== */
-    show_result(result);
-    Sleep(3000);
 
     getch();
     endwin();

@@ -7,9 +7,10 @@
 #include "./socket/_socket_group.h"
 #include "argment.h"
 #include "game.h"
-#include "manu.h"
+#include "menu.h"
 #include "window_mng.h"
 
+extern int error_flag;
 extern int port;
 extern int max_clients;
 extern int max_fps;

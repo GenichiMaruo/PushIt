@@ -1,4 +1,4 @@
-#include "../include/manu.h"
+#include "../include/menu.h"
 
 int menu_main(void) {
     int ch, choice = 0;
@@ -12,6 +12,7 @@ int menu_main(void) {
     keypad(stdscr, TRUE);
     mousemask(ALL_MOUSE_EVENTS, NULL);
     curs_set(0);
+    clear();
 
     // Set colors
     init_pair(100, COLOR_BLACK,
@@ -82,6 +83,9 @@ int menu_main(void) {
                     }
                 }
             }
+        } else if (ch == 27 || ch == 'q') {  // Handle Enter (newline) key input
+            choice = 3;
+            break;
         }
     }
     clear();
@@ -101,6 +105,7 @@ int menu_input_ip(void) {
     keypad(stdscr, TRUE);
     mousemask(ALL_MOUSE_EVENTS, NULL);
     curs_set(0);
+    clear();
 
     // Enable non-blocking input
     nodelay(stdscr, TRUE);
@@ -130,8 +135,10 @@ int menu_input_ip(void) {
     bool valid_ip = false;
     while (!valid_ip) {
         mvprintw(input_y, input_x, "IP Address: %s", tmp_ip_addr);
+        attron(COLOR_PAIR(200));
         mvprintw(confirm_y, confirm_x, "%s", confirm_label);
         mvprintw(cancel_y, cancel_x, "%s", cancel_label);
+        attroff(COLOR_PAIR(200));
         refresh();
 
         ch = getch();
@@ -153,6 +160,12 @@ int menu_input_ip(void) {
                     }
                 }
             }
+        } else if (ch == '\n') {  // Handle Enter (newline) key input
+            choice = 1;
+            break;
+        } else if (ch == 27) {  // Handle Escape key input (ASCII code 27)
+            choice = 2;
+            break;
         } else if (ch != ERR) {
             // Regular character input, add it to the IP address
             int len = strlen(tmp_ip_addr);
@@ -180,4 +193,26 @@ int menu_input_ip(void) {
         strcpy(ip_addr, tmp_ip_addr);
     }
     return choice;
+}
+
+void menu_waiting_message(char* message) {
+    // Initialize ncurses
+    initscr();
+    cbreak();
+    noecho();
+    keypad(stdscr, TRUE);
+    curs_set(0);
+    clear();
+
+    // Get the size of the terminal window
+    int max_y, max_x;
+    getmaxyx(stdscr, max_y, max_x);
+
+    // Calculate the position for the message
+    int message_y = max_y / 2;
+    int message_x = (max_x - strlen(message)) / 2;
+
+    // Display the waiting message
+    mvprintw(message_y, message_x, "%s", message);
+    refresh();
 }

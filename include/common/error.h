@@ -1,3 +1,4 @@
+#include "../menu.h"
 #include "external_libs.h"
 
 void error(char* msg, ...);
