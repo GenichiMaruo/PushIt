@@ -15,7 +15,6 @@ int main(int argc, char **argv) {
     config_init();
     init_ncurses();
     /* ======================menu====================== */
-    int is_connected = 0;
     while (1) {
         int selected_option = menu_main();
         switch (selected_option) {
@@ -33,12 +32,11 @@ int main(int argc, char **argv) {
         }
         /* init socket */
         if (argment_flag.server == 1) {
-            is_connected = host_socket_init();
+            host_socket_init();
         } else if (argment_flag.client == 1) {
-            is_connected = guest_socket_init(ip_addr);
+            guest_socket_init(ip_addr);
         }
-        if ((argment_flag.server == 1 || argment_flag.client == 1) ||
-            is_connected == 1) {
+        if (argment_flag.server == 1 || argment_flag.client == 1) {
             break;
         } else {
             menu_waiting_message("failed to connect");
