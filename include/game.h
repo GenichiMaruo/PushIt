@@ -13,4 +13,6 @@ extern struct ArgmentFlag argment_flag;
 
 int pushit_game_main(void);
 
+int menu_input_ip(void);
+
 #endif  // GAME_H

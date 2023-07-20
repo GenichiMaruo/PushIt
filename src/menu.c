@@ -1,70 +1,183 @@
 #include "../include/manu.h"
 
-// マウスイベントを有効にする関数
-void enable_mouse() {
-    mousemask(ALL_MOUSE_EVENTS, NULL);  // 全てのマウスイベントを受け取る
-    keypad(stdscr, TRUE);  // 特殊キー（Fキーなど）の受け取りを有効化
-    mouseinterval(0);  // マウスの速度制御を無効化
-    nodelay(stdscr, TRUE);  // キーボードの非ブロッキング入力を有効化
-}
-
 int menu_main(void) {
-    enable_mouse();  // マウスイベントを有効にする
+    int ch, choice = 0;
+    MEVENT event;
 
-    int maxY, maxX;
-    getmaxyx(stdscr, maxY, maxX);  // 画面のサイズを取得
+    // Initialize ncurses
+    initscr();
+    start_color();  // Enable color mode
+    cbreak();
+    noecho();
+    keypad(stdscr, TRUE);
+    mousemask(ALL_MOUSE_EVENTS, NULL);
+    curs_set(0);
 
-    // タイトルロゴを表示（中央の上部）
-    mvprintw(maxY / 2 - 5, (maxX - 10) / 2, "Title Logo");
+    // Set colors
+    init_pair(100, COLOR_BLACK,
+              COLOR_YELLOW);  // Title: black text on yellow background
+    init_pair(200, COLOR_WHITE,
+              COLOR_BLUE);  // Host Server and Find Server button: white text on
+                            // blue background
 
-    // "host server"ボタンを作成（中央左下）
-    int host_server_button_y = maxY / 2 + 3;
-    int host_server_button_x = maxX / 4;
-    mvprintw(host_server_button_y, host_server_button_x, "host server");
+    // Get the size of the terminal window
+    int max_y, max_x;
+    getmaxyx(stdscr, max_y, max_x);
 
-    // "find server"ボタンを作成（中央右下）
-    int find_server_button_y = maxY / 2 + 3;
-    int find_server_button_x = maxX * 3 / 4 - 11;  // 11は"find server"の文字数
-    mvprintw(find_server_button_y, find_server_button_x, "find server");
+    // Set the title text
+    char title[5][24] = {"### # # ### # # ### ###", "# # # # #   # #  #   # ",
+                         "### # # ### ###  #   # ", "#   # #   # # #  #   # ",
+                         "#   ### ### # # ###  # "};
 
+    // Set the button labels
+    char host_label[] = "[Host Server]";
+    char find_label[] = "[Find Server]";
+
+    // Calculate the positions for buttons and title
+    int title_y = max_y / 2 - 5;
+    int title_x = (max_x - 23) / 2;
+    int host_y = max_y / 2 + 2;
+    int host_x = (max_x - 13) / 4;
+    int find_y = max_y / 2 + 2;
+    int find_x = (max_x - 13) / 2 + (max_x - 13) / 4;
+
+    // Draw the title and buttons
+    for (int i = 0; i < 5; i++) {
+        for (int j = 0; j < 23; j++) {
+            if (title[i][j] == '#') {
+                attron(COLOR_PAIR(100));
+                mvprintw(title_y + i, title_x + j, " ");
+                attroff(COLOR_PAIR(100));
+            } else {
+                mvprintw(title_y + i, title_x + j, " ");
+            }
+        }
+    }
+    attron(COLOR_PAIR(200));
+    mvprintw(host_y, host_x, "%s", host_label);
+    mvprintw(find_y, find_x, "%s", find_label);
+    attroff(COLOR_PAIR(200));
     refresh();
 
-    MEVENT event;
-    int ch;
-    bool mouse_clicked = false;
-    bool key_pressed = false;
-
+    // Wait for mouse input and handle the selected button
     while (1) {
-        ch = getch();  // キーボードの入力を待機
-
-        // マウスイベントを取得
+        ch = getch();
         if (ch == KEY_MOUSE) {
             if (getmouse(&event) == OK) {
-                if (event.bstate & BUTTON1_CLICKED) {
-                    mouse_clicked = true;
+                if (event.bstate & BUTTON1_PRESSED) {
+                    // Check if the mouse click is within the "Host Server"
+                    // button
+                    if (event.y == host_y && event.x >= host_x &&
+                        event.x < host_x + 13) {
+                        choice = 1;
+                        break;
+                    }
+
+                    // Check if the mouse click is within the "Find Server"
+                    // button
+                    if (event.y == find_y && event.x >= find_x &&
+                        event.x < find_x + 13) {
+                        choice = 2;
+                        break;
+                    }
                 }
             }
         }
-
-        // キーボード入力を検知
-        if (ch != ERR) {
-            key_pressed = true;
-        }
-
-        // "host server"ボタンがクリックされた場合
-        if (mouse_clicked || (key_pressed && ch == KEY_F(1))) {
-            return 1;  // 任意の値を返す（ここでは1を返す）
-        }
-
-        // "find server"ボタンがクリックされた場合
-        if (mouse_clicked || (key_pressed && ch == KEY_F(2))) {
-            return 2;  // 任意の値を返す（ここでは2を返す）
-        }
-
-        mouse_clicked = false;
-        key_pressed = false;
     }
+    clear();
+    // Cleanup ncurses and return the selected choice
+    endwin();
+    return choice;
+}
 
-    // 通常、ここには到達しないが、念のため0を返す
-    return 0;
+int menu_input_ip(void) {
+    int ch, choice = 0;
+    MEVENT event;
+
+    // Initialize ncurses
+    initscr();
+    raw();  // Use raw mode for immediate input without line buffering
+    noecho();
+    keypad(stdscr, TRUE);
+    mousemask(ALL_MOUSE_EVENTS, NULL);
+    curs_set(0);
+
+    // Enable non-blocking input
+    nodelay(stdscr, TRUE);
+
+    // Get the size of the terminal window
+    int max_y, max_x;
+    getmaxyx(stdscr, max_y, max_x);
+
+    // Set the button labels
+    char confirm_label[] = "[ Confirm ]";
+    char cancel_label[] = "[ Cancel  ]";
+
+    // Calculate the positions for buttons and input field
+    int input_y = max_y / 2 - 2;
+    int input_x = max_x / 2 - 24;  // Adjust based on the input field width
+    int confirm_y = max_y / 2 + 2;
+    int confirm_x = (max_x - 13) / 4;
+    int cancel_y = max_y / 2 + 2;
+    int cancel_x = (max_x - 13) / 2 + (max_x - 13) / 4;
+
+    // Draw the input field and buttons
+    char* tmp_ip_addr =
+        (char*)malloc(21 * sizeof(char));  // Allocate memory for IP address
+                                           // input (including null terminator)
+    memset(tmp_ip_addr, '\0',
+           21);  // Initialize IP address with null characters
+    bool valid_ip = false;
+    while (!valid_ip) {
+        mvprintw(input_y, input_x, "IP Address: %s", tmp_ip_addr);
+        mvprintw(confirm_y, confirm_x, "%s", confirm_label);
+        mvprintw(cancel_y, cancel_x, "%s", cancel_label);
+        refresh();
+
+        ch = getch();
+        if (ch == KEY_MOUSE) {
+            if (getmouse(&event) == OK) {
+                if (event.bstate & BUTTON1_PRESSED) {
+                    // Check if the mouse click is within the Confirm button
+                    if (event.y == confirm_y && event.x >= confirm_x &&
+                        event.x < confirm_x + 12) {
+                        choice = 1;
+                        break;
+                    }
+
+                    // Check if the mouse click is within the Cancel button
+                    if (event.y == cancel_y && event.x >= cancel_x &&
+                        event.x < cancel_x + 12) {
+                        choice = 2;
+                        break;
+                    }
+                }
+            }
+        } else if (ch != ERR) {
+            // Regular character input, add it to the IP address
+            int len = strlen(tmp_ip_addr);
+            if (ch == 127 && len > 0) {
+                // Handle backspace (ASCII code 127)
+                tmp_ip_addr[len - 1] = '\0';
+
+                // Erase the character visually
+                mvprintw(input_y, input_x, "IP Address: %*s", 20, " ");
+            } else if (len < 20) {
+                // Maximum length of the IP address is 20 characters
+                tmp_ip_addr[len] = ch;
+
+                // Display the new character
+                mvaddch(input_y, input_x + len, ch);
+            }
+            refresh();  // Refresh the screen to apply changes
+        }
+    }
+    clear();
+    // Cleanup ncurses and return the selected choice
+    endwin();
+    ip_addr = (char*)malloc(21 * sizeof(char));
+    if (choice == 1) {
+        strcpy(ip_addr, tmp_ip_addr);
+    }
+    return choice;
 }

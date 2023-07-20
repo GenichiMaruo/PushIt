@@ -13,29 +13,35 @@ int main(int argc, char **argv) {
     argment_parse(argc, argv, &argment_flag);
     /* init config */
     config_init();
+    init_ncurses();
+    /* ======================menu====================== */
+    while (1) {
+        int selected_option = menu_main();
+        switch (selected_option) {
+            case 1:
+                argment_flag.server = 1;
+                break;
+            case 2: {
+                int selected_input_ip = menu_input_ip();
+                if (selected_input_ip == 1) {
+                    argment_flag.client = 1;
+                }
+            } break;
+            default:
+                printf("無効な選択です。\n");
+                break;
+        }
+        if (argment_flag.server == 1 || argment_flag.client == 1) {
+            break;
+        }
+    }
+
     /* init socket */
     if (argment_flag.server == 1) {
         host_socket_init();
     } else if (argment_flag.client == 1) {
         guest_socket_init(ip_addr);
     }
-    init_ncurses();
-    /* ======================menu====================== */
-    int selected_option = menu_main();
-
-    // 選択されたオプションに応じて何かの処理を行う
-    switch (selected_option) {
-        case 1:
-            printf("host serverが選択されました。\n");
-            break;
-        case 2:
-            printf("find serverが選択されました。\n");
-            break;
-        default:
-            printf("無効な選択です。\n");
-            break;
-    }
-
     result = pushit_game_main();
 
     /* ======================result====================== */
