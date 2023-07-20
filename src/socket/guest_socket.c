@@ -4,7 +4,8 @@
 int guest_server_fd;
 extern struct sockaddr_in address;
 
-void guest_socket_init(char *ip_addr) {
+int guest_socket_init(char *ip_addr) {
+    int is_connected = 1;
     char version[10] = PROGRAM_VERSION;
     char opponent_version[10];
     /* ======================client====================== */
@@ -19,7 +20,9 @@ void guest_socket_init(char *ip_addr) {
         struct in_addr **addr_list;
         int i;
         if ((host = gethostbyname(ip_addr)) == NULL) {
-            error("gethostbyname\n");
+            menu_waiting_message("failed to get ip address");
+            is_connected = 0;
+            return is_connected;
         }
         addr_list = (struct in_addr **)host->h_addr_list;
         for (i = 0; addr_list[i] != NULL; i++) {
@@ -38,10 +41,13 @@ void guest_socket_init(char *ip_addr) {
     error_check(inet_pton(AF_INET, ip_addr, &address.sin_addr) <= 0,
                 "Invalid address/ Address not supported \n");
     /* connect the socket to the server address */
-    fprintf(stderr, "connecting...\n");
-    error_check(connect(guest_server_fd, (struct sockaddr *)&address,
-                        sizeof(address)) < 0,
-                "Connection Failed \n");
+    menu_waiting_message("connecting...");
+    int connect_result =
+        connect(guest_server_fd, (struct sockaddr *)&address, sizeof(address));
+    if (connect_result < 0) {
+        is_connected = 0;
+        return is_connected;
+    }
     /* send client version to server */
     error_check(send(guest_server_fd, &version, sizeof(version), 0) < 0,
                 "send\n");
@@ -51,6 +57,7 @@ void guest_socket_init(char *ip_addr) {
         "read\n");
     /* check version */
     error_check(strcmp(opponent_version, version) != 0, "version mismatch\n");
+    return is_connected;
 }
 
 void guest_socket_close() { close(guest_server_fd); }

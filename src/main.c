@@ -15,6 +15,7 @@ int main(int argc, char **argv) {
     config_init();
     init_ncurses();
     /* ======================menu====================== */
+    int is_connected = 0;
     while (1) {
         int selected_option = menu_main();
         switch (selected_option) {
@@ -28,20 +29,23 @@ int main(int argc, char **argv) {
                 }
             } break;
             default:
-                printf("無効な選択です。\n");
                 break;
         }
-        if (argment_flag.server == 1 || argment_flag.client == 1) {
+        /* init socket */
+        if (argment_flag.server == 1) {
+            is_connected = host_socket_init();
+        } else if (argment_flag.client == 1) {
+            is_connected = guest_socket_init(ip_addr);
+        }
+        if ((argment_flag.server == 1 || argment_flag.client == 1) ||
+            is_connected == 1) {
             break;
+        } else {
+            menu_waiting_message("failed to connect");
+            Sleep(1000);
         }
     }
 
-    /* init socket */
-    if (argment_flag.server == 1) {
-        host_socket_init();
-    } else if (argment_flag.client == 1) {
-        guest_socket_init(ip_addr);
-    }
     result = pushit_game_main();
 
     /* ======================result====================== */

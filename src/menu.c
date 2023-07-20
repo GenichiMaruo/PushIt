@@ -41,6 +41,7 @@ int menu_main(void) {
     int find_y = max_y / 2 + 2;
     int find_x = (max_x - 13) / 2 + (max_x - 13) / 4;
 
+    clear();
     // Draw the title and buttons
     for (int i = 0; i < 5; i++) {
         for (int j = 0; j < 23; j++) {
@@ -122,16 +123,18 @@ int menu_input_ip(void) {
     int cancel_x = (max_x - 13) / 2 + (max_x - 13) / 4;
 
     // Draw the input field and buttons
-    char* tmp_ip_addr =
+    ip_addr =
         (char*)malloc(21 * sizeof(char));  // Allocate memory for IP address
                                            // input (including null terminator)
-    memset(tmp_ip_addr, '\0',
+    memset(ip_addr, '\0',
            21);  // Initialize IP address with null characters
     bool valid_ip = false;
     while (!valid_ip) {
-        mvprintw(input_y, input_x, "IP Address: %s", tmp_ip_addr);
+        mvprintw(input_y, input_x, "IP Address: %s", ip_addr);
+        attron(COLOR_PAIR(200));
         mvprintw(confirm_y, confirm_x, "%s", confirm_label);
         mvprintw(cancel_y, cancel_x, "%s", cancel_label);
+        attroff(COLOR_PAIR(200));
         refresh();
 
         ch = getch();
@@ -144,7 +147,6 @@ int menu_input_ip(void) {
                         choice = 1;
                         break;
                     }
-
                     // Check if the mouse click is within the Cancel button
                     if (event.y == cancel_y && event.x >= cancel_x &&
                         event.x < cancel_x + 12) {
@@ -153,18 +155,24 @@ int menu_input_ip(void) {
                     }
                 }
             }
+        } else if (ch == '\n') {  // Handle Enter (newline) key input
+            choice = 1;
+            break;
+        } else if (ch == 27) {  // Handle Escape key input (ASCII code 27)
+            choice = 2;
+            break;
         } else if (ch != ERR) {
             // Regular character input, add it to the IP address
-            int len = strlen(tmp_ip_addr);
+            int len = strlen(ip_addr);
             if (ch == 127 && len > 0) {
                 // Handle backspace (ASCII code 127)
-                tmp_ip_addr[len - 1] = '\0';
+                ip_addr[len - 1] = '\0';
 
                 // Erase the character visually
                 mvprintw(input_y, input_x, "IP Address: %*s", 20, " ");
             } else if (len < 20) {
                 // Maximum length of the IP address is 20 characters
-                tmp_ip_addr[len] = ch;
+                ip_addr[len] = ch;
 
                 // Display the new character
                 mvaddch(input_y, input_x + len, ch);
@@ -175,9 +183,28 @@ int menu_input_ip(void) {
     clear();
     // Cleanup ncurses and return the selected choice
     endwin();
-    ip_addr = (char*)malloc(21 * sizeof(char));
-    if (choice == 1) {
-        strcpy(ip_addr, tmp_ip_addr);
-    }
+    menu_waiting_message("waiting for connection...");
     return choice;
+}
+
+void menu_waiting_message(char* message) {
+    // Initialize ncurses
+    initscr();
+    cbreak();
+    noecho();
+    keypad(stdscr, TRUE);
+    curs_set(0);
+    clear();
+
+    // Get the size of the terminal window
+    int max_y, max_x;
+    getmaxyx(stdscr, max_y, max_x);
+
+    // Calculate the position for the message
+    int message_y = max_y / 2;
+    int message_x = (max_x - strlen(message)) / 2;
+
+    // Display the waiting message
+    mvprintw(message_y, message_x, "%s", message);
+    refresh();
 }
