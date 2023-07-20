@@ -11,6 +11,7 @@ int pushit_game_main() {
     FieldPos field_pos;
     /* ======================init====================== */
     /* init objects */
+    clear();
     player_init(&pl, 0, 0, 0, 0, 0, 100);
     player_init(&pl2, 0, 0, 0, 0, 0, 100);
     player_list_add(&pl_list, &pl);

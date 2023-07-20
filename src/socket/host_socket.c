@@ -19,7 +19,7 @@ void host_socket_init() {
     error_check(
         bind(host_server_fd, (struct sockaddr *)&address, sizeof(address)) < 0,
         "bind failed\n");
-    fprintf(stderr, "waiting for connection...\n");
+    menu_waiting_message("Waiting for connection...");
     /* try to specify maximum of 3 pending connections for the
      * master socket */
     error_check(listen(host_server_fd, 3) < 0, "listen\n");

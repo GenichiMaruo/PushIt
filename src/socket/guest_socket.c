@@ -20,14 +20,13 @@ void guest_socket_init(char *ip_addr) {
         int i;
         if ((host = gethostbyname(ip_addr)) == NULL) {
             error("gethostbyname\n");
+            return;
         }
         addr_list = (struct in_addr **)host->h_addr_list;
         for (i = 0; addr_list[i] != NULL; i++) {
             ip_addr = inet_ntoa(*addr_list[i]);
         }
     }
-    /* print ip address */
-    printf("ip_addr: %s\n", ip_addr);
     /* Creating socket file descriptor */
     error_check((guest_server_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0,
                 "socket failed\n");
@@ -38,7 +37,7 @@ void guest_socket_init(char *ip_addr) {
     error_check(inet_pton(AF_INET, ip_addr, &address.sin_addr) <= 0,
                 "Invalid address/ Address not supported \n");
     /* connect the socket to the server address */
-    fprintf(stderr, "connecting...\n");
+    menu_waiting_message("Connecting...");
     error_check(connect(guest_server_fd, (struct sockaddr *)&address,
                         sizeof(address)) < 0,
                 "Connection Failed \n");
