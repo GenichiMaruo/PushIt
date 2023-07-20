@@ -4,7 +4,8 @@
 int host_server_fd, new_socket;
 extern struct sockaddr_in address;
 
-void host_socket_init() {
+int host_socket_init() {
+    int is_connected = 1;
     char version[10] = PROGRAM_VERSION;
     char opponent_version[10];
     int addrlen = sizeof(address);
@@ -19,15 +20,17 @@ void host_socket_init() {
     error_check(
         bind(host_server_fd, (struct sockaddr *)&address, sizeof(address)) < 0,
         "bind failed\n");
-    fprintf(stderr, "waiting for connection...\n");
+    menu_waiting_message("waiting for connection...");
     /* try to specify maximum of 3 pending connections for the
      * master socket */
     error_check(listen(host_server_fd, 3) < 0, "listen\n");
     /* accept the incoming connection */
-    error_check(
-        (new_socket = accept(host_server_fd, (struct sockaddr *)&address,
-                             (socklen_t *)&addrlen)) < 0,
-        "accept\n");
+    int accept_result = accept(host_server_fd, (struct sockaddr *)&address,
+                               (socklen_t *)&addrlen);
+    if (accept_result < 0) {
+        is_connected = 0;
+        return is_connected;
+    }
     /* read client version */
     error_check(
         read(new_socket, &opponent_version, sizeof(opponent_version)) < 0,
@@ -36,6 +39,7 @@ void host_socket_init() {
     error_check(send(new_socket, &version, sizeof(version), 0) < 0, "send\n");
     /* check version */
     error_check(strcmp(opponent_version, version) != 0, "version mismatch\n");
+    return is_connected;
 }
 
 void host_socket_close() {

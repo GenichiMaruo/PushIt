@@ -6,7 +6,7 @@
 #include "../main.h"
 #include "data_socket.h"
 
-void guest_socket_init(char *ip_addr);
+int guest_socket_init(char *ip_addr);
 void guest_socket_close();
 void guest_socket_send(SharedData *sd);
 void guest_socket_recv(SharedData *sd);
